@@ -17,3 +17,32 @@ class PrioridadAdmin(admin.ModelAdmin):
     list_display = ('descripcion_prioridad',)  # Asegúrate de usar una tupla
     search_fields = ('descripcion_prioridad',)
 
+@admin.register(Producto)
+class ProductoAdmin(admin.ModelAdmin):
+    list_display = ('descripcion_producto',)  # Asegúrate de usar una tupla
+    search_fields = ('descripcion_producto',)
+
+
+@admin.register(Departamento)
+class DepartamentoAdmin(admin.ModelAdmin):
+    list_display = ('descripcion_departamento',)  # Asegúrate de usar una tupla
+    search_fields = ('descripcion_departamento',)
+
+
+
+@admin.register(Tipo_Nota)
+class Tipo_NotaAdmin(admin.ModelAdmin):
+    list_display = ('descripcion_tipo_nota',)  # Asegúrate de usar una tupla
+    search_fields = ('descripcion_tipo_nota',)
+
+
+@admin.register(Origen_Ticket)
+class Origen_TicketAdmin(admin.ModelAdmin):
+    list_display = ('descripcion_origen_ticket',)  # Asegúrate de usar una tupla
+    search_fields = ('descripcion_origen_ticket',)
+
+
+
+
+
+
