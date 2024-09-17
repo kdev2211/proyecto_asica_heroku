@@ -55,7 +55,7 @@
     padding-right: 20px;
 "></i>
     <div class="d-flex align-items-center justify-content-between">
-      <a href="{% url 'app_tickets:view_panel_principal' %}" class="logo d-flex align-items-center">
+      <a href="" class="logo d-flex align-items-center">
         <img src="{% static 'assets/img/fabicon.png' %}" alt="">
         <span class="d-none d-lg-block">HELP DESK</span>
       </a>
@@ -94,7 +94,7 @@
             
             <a href="#" class="notification-link" style="text-decoration: none; color:inherit;">
               <li class="notification-item">
-                <i class="{{ item.icono }}"></i> <!-- Aquí se muestra el ícono dinámico -->
+                <i class=""></i> <!-- Aquí se muestra el ícono dinámico -->
                 <div>
                   <h6></h6>
                   <p></p>
@@ -185,7 +185,7 @@
         </a>
       </li><!-- End Components Nav -->
 
-      {% if es_supervisor %}
+
       <li class="nav-item">
         <a class="nav-link collapsed" href="">
           <i class="bi bi-people"></i>
