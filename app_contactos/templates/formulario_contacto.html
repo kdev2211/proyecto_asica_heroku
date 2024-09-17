@@ -24,7 +24,7 @@
     <div class="row gy-4">
         <div class="col-xl-6">
             <div class="card p-4">
-                <form id="contactForm" role="form" method="POST" action="">
+                <form id="contactForm" role="form" method="POST" action="{% url 'app_contactos:view_enviar_consulta_ajax' %}">
                     {% csrf_token %}
                     <div class="row gy-4">
                         <div class="col-md-6">
@@ -54,7 +54,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-
 
                         <div class="col-md-5">
                             <select class="form-select" aria-label="Default select example" name="categoria_consulta" required>
@@ -151,6 +150,82 @@
 
 
 </section>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('contactForm');
+        var modalConfirmacion = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+        var modalAgradecimiento = new bootstrap.Modal(document.getElementById('modalAgradecimiento'));
+        var isSubmitting = false;  // Bandera para evitar múltiples envíos
+        var submitButton = form.querySelector('button[type="submit"]');  // Asumiendo que el botón de envío es el único con este tipo
+        var spinnerDiv = document.getElementById('spinner-div'); // Referencia al spinner
+    
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting normally
+    
+            if (isSubmitting) return;  // No hacer nada si ya se está enviando
+    
+            isSubmitting = true;  // Establecer la bandera para evitar múltiples envíos
+            submitButton.disabled = true;  // Deshabilitar el botón de envío
+    
+            // Show the confirmation modal
+            modalConfirmacion.show();
+        });
+    
+        document.getElementById('confirmarEnvio').addEventListener('click', function() {
+            modalConfirmacion.hide();
+            
+            // Mostrar el spinner cuando el modal de confirmación se oculta
+            spinnerDiv.style.display = 'flex';
+            
+            var formData = new FormData(form);
+    
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show the thank you modal
+                    modalAgradecimiento.show();
+                    
+                    // Hide the spinner and reset the form after 3 seconds
+                    setTimeout(function() {
+                        modalAgradecimiento.hide();
+                        form.reset();  // Clear the form
+                        spinnerDiv.style.display = 'none';  // Hide the spinner
+                        isSubmitting = false;  // Rehabilitar el envío
+                        submitButton.disabled = false;  // Habilitar el botón de envío
+                    }, 3000);
+                } else {
+                    console.error('Error:', data.error);
+                    spinnerDiv.style.display = 'none'; // Hide the spinner
+                    isSubmitting = false;  // Rehabilitar el envío
+                    submitButton.disabled = false;  // Habilitar el botón de envío
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                spinnerDiv.style.display = 'none'; // Hide the spinner
+                isSubmitting = false;  // Rehabilitar el envío
+                submitButton.disabled = false;  // Habilitar el botón de envío
+            });
+        });
+    
+        // Restablecer la bandera isSubmitting y habilitar el botón de envío cuando se cierra el modal de confirmación
+        document.getElementById('modalConfirmacion').addEventListener('hidden.bs.modal', function() {
+            if (isSubmitting) {
+                isSubmitting = false;
+                submitButton.disabled = false;  // Habilitar el botón de envío si el modal se cierra
+            }
+        });
+    });
+    </script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/js/intlTelInput.min.js"></script>
