@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_autenticacion',
     'app_contactos',
-    'app_tickets',
+    'app_tickets'
 ]
 
 MIDDLEWARE = [

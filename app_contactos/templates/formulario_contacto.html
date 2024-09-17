@@ -49,20 +49,22 @@
                         <div class="col-md-7">
                             <select class="form-select" aria-label="Default select example" placeholder="Producto" name="producto" required>
                                 <option value="" disabled selected>Elige el producto relacionado a tu consulta</option>
-                           
-                                <option value=""></option>
-                                
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}">{{ producto.descripcion_producto }}</option>
+                                {% endfor %}
                             </select>
                         </div>
+
 
                         <div class="col-md-5">
                             <select class="form-select" aria-label="Default select example" name="categoria_consulta" required>
                                 <option value="" disabled selected>¿Sobre que es tu consulta?</option>
-                                
-                                <option value=""></option>
-                           
+                                {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}">{{ categoria.descripcion_categoria }}</option>
+                                {% endfor %}
                             </select>
                         </div>
+                        
                         <div class="col-md-12">
                             <textarea class="form-control" name="descripcion_incidente" rows="6" placeholder="Escribe tu consulta aquí." required></textarea>
                         </div>
