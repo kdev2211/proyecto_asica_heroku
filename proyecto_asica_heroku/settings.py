@@ -125,7 +125,6 @@ STATIC_URL = "static/"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-
 django_heroku.settings(locals())
 
 # Default primary key field type
@@ -133,5 +132,27 @@ django_heroku.settings(locals())
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+
+
+
+#EMAIL:
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'asicahelp@gmail.com'
+EMAIL_HOST_PASSWORD = 'apamksnezcywrxji'
+
+
+# Duración de la sesión en segundos (1800 segundos = 30 minutos)
+SESSION_COOKIE_AGE = 1800
+
+# Cerrar la sesión al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Renovar la sesión en cada solicitud
+SESSION_SAVE_EVERY_REQUEST = True
 
 

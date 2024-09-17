@@ -43,6 +43,9 @@ class Origen_TicketAdmin(admin.ModelAdmin):
 
 
 
-
+@admin.register(Ticket)
+class TicketAdmin(admin.ModelAdmin):
+    list_display = ('numero_ticket',)  # Asegúrate de usar una tupla
+    search_fields = ('numero_ticket',)
 
 

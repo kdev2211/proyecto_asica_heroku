@@ -86,9 +86,8 @@ class Ticket(models.Model):
         super(Ticket, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}--{}--{}--{}--{}--{}--{}--{}--{}".format(
-            self.contacto, self.producto, self.status, self.prioridad, 
-            self.categoria, self.fecha_creacion, self.numero_ticket, self.usuario, self.grupo, self.tipo_ticket
+        return "{}--{}--{}--{}--{}--{}--{}--{}".format(
+            self.contacto, self.producto, self.status, self.prioridad, self.categoria, self.fecha_creacion, self.numero_ticket, self.usuario
         )
 	   
 
