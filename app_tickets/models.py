@@ -76,7 +76,7 @@ class Ticket(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.PROTECT, null=True)
     usuario = models.ForeignKey(get_user_model(), on_delete=models.PROTECT, null=True, blank=True)
     departamento = models.ForeignKey('Departamento', on_delete=models.PROTECT, null=True)
-    numero_ticket = models.CharField(max_length=13, unique=True, default='1')
+    numero_ticket = models.CharField(max_length=13, unique=True, default=generate_ticket_number)
     fecha_creacion = models.DateTimeField(default=timezone.now, blank=True)
     origen_ticket = models.ForeignKey('Origen_Ticket', on_delete=models.PROTECT, null=True)
 
