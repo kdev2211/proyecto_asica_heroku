@@ -107,49 +107,50 @@ def view_agregar_usuario_ajax(request):
                         'existing': True
                     })
 
-            # Crear nuevo usuario
-            contrasena_temporal = get_random_string(10)
-            username = funcion_generar_nombre_usuario()
-            usuario = User.objects.create_user(
-                username=username,
-                first_name=nombre,
-                last_name=apellido,
-                email=email,
-                password=contrasena_temporal,
-                is_active=False
-            )
-            departamento = Departamento.objects.get(id=departamento_id)
-            Perfil_Usuario.objects.create(
-                user=usuario,
-                nombre_completo=f"{nombre} {apellido}",
-                departamento=departamento,
-                nombre_puesto=puesto,
-                telefono_usuario=telefono
-            )
-            token = uuid.uuid4()
-            Invitacion_Usuario.objects.create(
-                email=email,
-                contrasena_temporal=contrasena_temporal,
-                token=token
-            )
-            link_activacion = request.build_absolute_uri(reverse('app_autenticacion:view_formulario_activacion_cuenta', args=[token]))
-            mensaje = (f"Hola {nombre},\n\nHas sido invitado a unirte. Usa tu correo y la siguiente contraseña temporal: "
-                       f"{contrasena_temporal}\nAccede al sistema usando este enlace: {link_activacion}.\n"
-                       f"Una vez que actives tu cuenta, se te redirigirá para iniciar sesión con tu nueva contraseña.")
-            email_from = settings.EMAIL_HOST_USER
-            email_message = EmailMessage(
-                subject='Invitación a unirse',
-                body=mensaje,
-                from_email=email_from,
-                to=[email],
-            )
-            email_message.send()
+            else:
+                # Crear nuevo usuario
+                contrasena_temporal = get_random_string(10)
+                username = funcion_generar_nombre_usuario()
+                usuario = User.objects.create_user(
+                    username=username,
+                    first_name=nombre,
+                    last_name=apellido,
+                    email=email,
+                    password=contrasena_temporal,
+                    is_active=False
+                )
+                departamento = Departamento.objects.get(id=departamento_id)
+                Perfil_Usuario.objects.create(
+                    user=usuario,
+                    nombre_completo=f"{nombre} {apellido}",
+                    departamento=departamento,
+                    nombre_puesto=puesto,
+                    telefono_usuario=telefono
+                )
+                token = uuid.uuid4()
+                Invitacion_Usuario.objects.create(
+                    email=email,
+                    contrasena_temporal=contrasena_temporal,
+                    token=token
+                )
+                link_activacion = request.build_absolute_uri(reverse('app_autenticacion:view_formulario_activacion_cuenta', args=[token]))
+                mensaje = (f"Hola {nombre},\n\nHas sido invitado a unirte. Usa tu correo y la siguiente contraseña temporal: "
+                        f"{contrasena_temporal}\nAccede al sistema usando este enlace: {link_activacion}.\n"
+                        f"Una vez que actives tu cuenta, se te redirigirá para iniciar sesión con tu nueva contraseña.")
+                email_from = settings.EMAIL_HOST_USER
+                email_message = EmailMessage(
+                    subject='Invitación a unirse',
+                    body=mensaje,
+                    from_email=email_from,
+                    to=[email],
+                )
+                email_message.send()
 
-            return JsonResponse({
-                'success': True,
-                'message': 'Usuario creado, la invitación ha sido enviada.',
-                'existing': False
-            })
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Usuario creado, la invitación ha sido enviada.',
+                    'existing': False
+                })
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
