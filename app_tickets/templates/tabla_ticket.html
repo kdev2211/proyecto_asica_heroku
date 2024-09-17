@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+{% block title %}Tickets{% endblock title %}
+{% load static %}
+{% block contenido %}
+
+<div class="pagetitle"> <!-- INICIO: TITULO DE PAGINA | MIS TICKETS -->         
+    <h1>Mis tickets</h1>
+
+    <!-- ELEMENTOS DE NAVEGACION ENTRE PAGINAS -->     
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'app_tickets:view_panel_principal' %}">Mi Dashboard</a></li>
+        <li class="breadcrumb-item">Mis tickets</li>
+      </ol>
+    </nav>
+  </div><!-- FINAL DE EL TITULO DE PAGINA -->
+
+  <!-- INICIO: CONTENEDOR DE PAGINA-->       
+  <section class="section">
+    <div class="row">
+
+
+<!-- INICIO: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS PARA SUPERVISOR -->    
+
+{% if user_group == 'Supervisor' %}
+
+<div class="card">
+    <div class="card-body">
+
+      <div class="row g-4">
+        <div class="col-sm-2">
+          <h5 class="card-title"><button type="button" class="btn btn-outline-primary"  data-bs-toggle="modal" data-bs-target="#modalDialogScrollable">CREAR TICKET +</button></h5> 
+          </div>
+
+ 
+
+
+
+<!-- INICIO: TABLA DE TICKETS-->       
+<table class="table datatable">
+        <thead>
+          <tr>
+            <th scope="col">Ticket #</th>
+            <th scope="col">Contacto</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Categoría</th>
+            <th scope="col">Prioridad</th>
+            <th scope="col">Status</th>
+            <th scope="col">Departamento</th>
+            <th scope="col">Usuario Asignado</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Editar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets%}
+          <tr>
+            <td>{{ticket.numero_ticket}}</td>
+              <td>{{ticket.contacto.nombre_contacto}} {{ticket.contacto.apellido_contacto}}</td>
+              <td>{% if ticket.producto == null %} Sin asignar {% else %} {{ticket.producto}} {% endif %} </td>
+              <td>{% if ticket.categoria == null %} Sin asignar {% else %} {{ticket.categoria}} {% endif %} </td>
+              
+              
+              <td><span class="btnm btn-outline-{{ticket.prioridad}} btn-sm">{% if ticket.prioridad == null %} Sin asignar {% else %} {{ticket.prioridad}} {% endif %} </span></td>          
+              <td><span class="btnm btn-outline-{{ticket.status}} btn-sm">{{ticket.status}}</span></td>    
+              <td><span class="btnm btn-outline-{{ticket.departamento}} btn-sm">{% if ticket.departamento == null %} Sin asignar {% else %} {{ticket.departamento}} {% endif %}</span></td>
+              <td><span class="btnm btn-outline-{{ticket.usuario}} btn-sm">{% if ticket.usuario == null %} Sin asignar {% else %} {{ticket.usuario.first_name}} {{ticket.usuario.last_name}} ({{ticket.usuario.username}}) {% endif %}</span></td>
+              <td>{{ticket.fecha_creacion | date:"d/m/Y"}}</td>
+              <td style="align=center;"><a href='/helpdesk/ticket_tabla/ticket/{{ ticket.id }}' title="Editar Ticket"><i class="bi bi-pencil-square h3" ></a></i></td>    
+                   
+          </tr>
+          
+          {% endfor %}
+      </tbody>
+      </table>
+<!-- FINAL: TABLA DE TICKETS-->       
+
+    </div>
+  </div>
+</div>
+<!-- FINAL: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS -->      
+
+
+
+
+
+
+<!-- INICIO: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS PARA DEPARTAMENTO DE TI -->    
+{% else %}
+
+<div class="card">
+  <div class="card-body">
+
+    <div class="row g-4">
+    <div class="col-sm-11">
+   
+    </div>
+
+
+
+
+    
+
+
+
+
+<!-- INICIO: TABLA DE TICKETS-->       
+<table class="table datatable">
+      <thead>
+        <tr>
+          <th scope="col">Ticket #</th>
+          <th scope="col">Contacto</th>
+          <th scope="col">Producto</th>
+          <th scope="col">Categoría</th>
+          <th scope="col">Prioridad</th>
+          <th scope="col">Status</th>
+          <th scope="col">Fecha</th>
+          <th ></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets%}
+        <tr>
+          <td>{{ticket.numero_ticket}}</td>
+            <td>{{ticket.contacto.nombre_contacto}} {{ticket.contacto.apellido_contacto}}</td>
+            <td>{% if ticket.producto == null %} Sin asignar {% else %} {{ticket.producto}} {% endif %} </td>
+            <td>{% if ticket.categoria == null %} Sin asignar {% else %} {{ticket.categoria}} {% endif %} </td>
+            
+            
+            <td><span class="btnm btn-outline-{{ticket.prioridad}} btn-sm">{% if ticket.prioridad == null %} Sin asignar {% else %} {{ticket.prioridad}} {% endif %} </span></td>          
+            <td><span class="btnm btn-outline-{{ticket.status}} btn-sm">{{ticket.status}}</span></td>    
+            <td>{{ticket.fecha_creacion | date:"d/m/Y"}}</td>
+            <td><a href='/helpdesk/ticket_tabla/ticket/{{ ticket.id }}' title="Editar Ticket"><i class="bi bi-pencil-square h3"></i></a></td>    
+                 
+        </tr>
+        
+        {% endfor %}
+    </tbody>
+    </table>
+<!-- FINAL: TABLA DE TICKETS-->       
+
+  </div>
+</div>
+</div>
+<!-- FINAL: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS -->   
+
+
+
+{% endif %}
+
+
+
+
+<!-- INICIO: MODAL PARA INSERTAR TICKETS -->   
+<div class="modal fade" id="modalDialogScrollable" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crear un ticket como usuario:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+<!-- INICIO: FORMULARIO DE EL MODAL -->          
+        <form role="form"  id="UsuarioTicketForm" method="POST" action='{% url 'app_tickets:crear_ticket_usuario_ajax' %}' >
+          {% csrf_token %}
+
+<!-- INICIO: CAMPOS DE EL FORMULARIO MODAL -->            
+<div class="row">
+  <div class="col-md-6">
+    <label class="form-label">Producto:</label>
+    <select class="form-select" aria-label="Default select example" placeholder="Producto" name="select_producto" required>
+        <option value="" disabled selected>Seleccione una opción:</option>
+        {% for producto in lista_productos %}
+        <option value="{{ producto.id }}">{{ producto.descripcion_producto }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+
+
+
+  <div class="col-md-6">
+    <label  class="form-label">Categoría:</label>
+    <select class="form-select" aria-label="Default select example" name="select_categoria" required>
+        <option value="" disabled selected>Seleccione una opción:</option>
+        {% for categoria in lista_categoria %}
+        <option value="{{ categoria.id }}">{{ categoria.descripcion_categoria }}</option>
+        {% endfor %}
+    </select>
+</div>
+</div>
+
+<br>
+
+<div class="row">
+<div class="col-md-6">
+  <label class="form-label">Prioridad:</label>
+  <select class="form-select" aria-label="Default select example" name="select_prioridad" required>
+      <option value="" disabled selected>Seleccione una opción</option>
+      {% for prioridad in prioridad_lista %}
+      <option value="{{ prioridad.id }}">{{ prioridad.descripcion_prioridad}}</option>
+      {% endfor %}
+  </select>
+</div>
+
+
+<div class="col-md-6">
+  <label class="form-label">Status:</label>
+  <select class="form-select" aria-label="Default select example" name="select_status" required>
+      <option value="" disabled selected>Seleccione una opción</option>
+      {% for status in status_lista %}
+      <option value="{{ status.id }}">{{ status.descripcion_status }}</option>
+      {% endfor %}
+  </select>
+</div>
+</div>
+
+<br></br>
+
+{% if user_group == 'Supervisor' %}
+<div class="row">
+  <div class="col-md-10">
+    <label class="form-label">Departamento:</label>
+    <select class="form-select" id="select_departamento" aria-label="Default select example" name="select_departamento" required>
+      <option value="" disabled selected>Seleccione una opción:</option>
+      {% for departamento in departamentos_lista %}
+        <option value="{{ departamento.id }}">{{ departamento.descripcion_departamento }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<br>
+
+<div class="row">
+  <div class="col-md-10">
+    <label class="form-label">Usuario:</label>
+    <select class="form-select" id="select_usuario" aria-label="Default select example" name="select_usuario" required disabled>
+      <option value="" disabled selected>Seleccione a un usuario:</option>
+    </select>
+  </div>
+</div>
+
+{% else %}
+
+<div class="row">
+  <div class="col-md-10">
+    <label class="form-label">Usuario:</label>
+    <select class="form-select" id="select_usuario_personal" aria-label="Default select example" name="select_usuario_personal" required>
+      <option value="" disabled selected>Seleccione una opción:</option>
+      {% for usuarios in perfiles_activos %}
+        <option value="{{ usuarios.user.id }}">{{ usuarios.nombre_completo }} (Usuario: {{usuarios.user.username}} | {{usuarios.nombre_puesto}})</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+{% endif %}
+<br></br>
+
+
+<div class="row">
+
+
+  <div class="form-group">
+    <label for="message-text" class="col-form-label">Descripción o mensaje:</label>
+    <textarea class="form-control" name="descripcion_incidente"  placeholder="Escribe tu mensaje aquí." required></textarea>
+  </div>
+
+</div>
+
+ 
+</div>
+<!-- FINAL: CAMPOS DE EL FORMULARIO MODAL -->           
+
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
+      </div>
+    </form>
+
+<!-- FINAL: FORMULARIO DE EL MODAL -->  
+
+
+</div>
+</div>
+</div>
+<!-- FINAL: MODAL PARA INSERTAR TICKETS -->   
+
+
+
+
+
+<!-- MODAL: CONFIRMACIÓN DE ENVÍO -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modalConfirmacionLabel">Confirmación.</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              ¿Desea enviar la información o seguir editando?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">No, seguir editando</button>
+              <button type="button" class="btn btn-outline-primary" id="confirmarEnvio">Enviar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL: AGRADECIMIENTO -->
+<div class="modal fade" id="modalSuccess" tabindex="-1" aria-labelledby="modalSuccessLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modalSuccessLabel">Ticket creado.</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Tu ticket se ha creado exitosamente.
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal" id="cerrarModal">Cerrar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+</section>
+  <!-- FINAL: CONTENEDOR DE PAGINA-->   
+{% if user_group == 'Supervisor' %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var departamentoSelect = document.getElementById('select_departamento');
+      var usuarioAsignadoSelect = document.getElementById('select_usuario');
+  
+      // Deshabilitar inicialmente el select de usuario
+      usuarioAsignadoSelect.disabled = true;
+  
+      departamentoSelect.addEventListener('change', function() {
+        var departamentoId = departamentoSelect.value;
+  
+        if (departamentoId != "") {
+          usuarioAsignadoSelect.disabled = false;
+  
+          fetch(`/helpdesk/view_cargar_usuarios_ajax/${departamentoId}/`)
+            .then(response => response.json())
+            .then(data => {
+              usuarioAsignadoSelect.innerHTML = '<option value="" selected>Seleccione un usuario</option>';
+  
+              data.usuarios.forEach(function(usuario) {
+                var option = document.createElement('option');
+                option.value = usuario.id;
+                option.text = `${usuario.first_name} ${usuario.last_name} ( ${usuario.username} | ${usuario.nombre_puesto})`;
+                usuarioAsignadoSelect.appendChild(option);
+              });
+            })
+            .catch(error => {
+              console.error('Error al cargar usuarios:', error);
+              usuarioAsignadoSelect.innerHTML = '<option value="">Error al cargar usuarios</option>';
+            });
+        } else {
+          usuarioAsignadoSelect.disabled = true;
+          usuarioAsignadoSelect.innerHTML = '<option value="" selected>Seleccione un usuario</option>';
+        }
+      });
+    });
+  </script>
+
+
+
+
+  <script>
+    $(document).ready(function () {
+
+      // Interceptar el envío del formulario
+      $("#UsuarioTicketForm").on("submit", function (e) {
+          e.preventDefault(); // Prevenir el envío inmediato del formulario
+          $('#modalConfirmacion').modal('show'); // Mostrar modal de confirmación
+      });
+  
+      // Cuando el usuario confirme en el modal
+      $("#confirmarEnvio").on("click", function () {
+          // Obtener los datos del formulario
+          var formData = new FormData($("#UsuarioTicketForm")[0]);
+  
+          // Enviar el formulario con AJAX
+          $.ajax({
+              url: $("#UsuarioTicketForm").attr("action"),
+              type: "POST",
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: function (response) {
+                  // Ocultar el modal de confirmación
+                  $('#modalConfirmacion').modal('hide');
+  
+                  // Limpiar el formulario después del envío exitoso
+                  $("#UsuarioTicketForm")[0].reset();
+  
+                  // Cerrar el modal de creación de ticket
+                  $('#modalDialogScrollable').modal('hide');
+  
+
+  
+                  // Mostrar un mensaje de éxito si lo deseas
+                  $('#modalSuccess').modal('show'); // Mostrar modal de confirmación
+
+                  setTimeout(function() {
+                    location.reload(false); // Recargar sin usar caché
+                }, 2000); // Esperar 2 segundos antes de recargar
+              },
+              error: function (xhr, status, error) {
+                  alert("Ocurrió un error al enviar el ticket. Por favor, intenta de nuevo.");
+              }
+          });
+      });
+  });
+    </script>
+
+
+    {% else %}
+
+    <script>
+      $(document).ready(function () {
+  
+        // Interceptar el envío del formulario
+        $("#UsuarioTicketForm").on("submit", function (e) {
+            e.preventDefault(); // Prevenir el envío inmediato del formulario
+            $('#modalConfirmacion').modal('show'); // Mostrar modal de confirmación
+        });
+    
+        // Cuando el usuario confirme en el modal
+        $("#confirmarEnvio").on("click", function () {
+            // Obtener los datos del formulario
+            var formData = new FormData($("#UsuarioTicketForm")[0]);
+    
+            // Enviar el formulario con AJAX
+            $.ajax({
+                url: $("#UsuarioTicketForm").attr("action"),
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    // Ocultar el modal de confirmación
+                    $('#modalConfirmacion').modal('hide');
+    
+                    // Limpiar el formulario después del envío exitoso
+                    $("#UsuarioTicketForm")[0].reset();
+    
+                    // Cerrar el modal de creación de ticket
+                    $('#modalDialogScrollable').modal('hide');
+    
+                    // Eliminar el mensaje "No entries found" si existe
+                    $("table.datatable tbody").find(".datatable-empty").remove();
+                    // Actualizar la tabla con el nuevo ticket
+                    var newRow = `
+                        <tr>
+                            <td>${response.numero_ticket}</td>
+                            <td>${response.nombre_contacto} ${response.apellido_contacto}</td>
+                            <td>${response.producto ? response.producto : 'Sin asignar'}</td>
+                            <td>${response.categoria ? response.categoria : 'Sin asignar'}</td>
+                            <td><span class="btnm btn-outline-${response.prioridad} btn-sm">${response.prioridad ? response.prioridad : 'Sin asignar'}</span></td>
+                            <td><span class="btnm btn-outline-${response.status} btn-sm">${response.status}</span></td>
+                            <td><span class="btnm btn-outline-${response.departamento} btn-sm">${response.departamento}</span></td>
+                            <td><span class="btnm btn-outline-${response.usuario} btn-sm">${response.usuario}</span></td>
+                            <td>${response.fecha_creacion}</td>
+                            <td><a href='/helpdesk/ticket_tabla/ticket/${response.ticket_id}' title="Editar Ticket"><i class="bi bi-pencil-square h3"></i></a></td>
+                        </tr>`;
+                    
+                    $("table.datatable tbody").append(newRow);
+    
+                    // Mostrar un mensaje de éxito si lo deseas
+                    $('#modalSuccess').modal('show'); // Mostrar modal de confirmación
+                },
+                error: function (xhr, status, error) {
+                    alert("Ocurrió un error al enviar el ticket. Por favor, intenta de nuevo.");
+                }
+            });
+        });
+    });
+      </script>
+      
+    {% endif %}
+
+
+  {% endblock contenido %}
+   

@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+{% block title %}Tickets{% endblock title %}
+{% load static %}
+{% block contenido %}
+
+
+
+<div class="pagetitle">
+    <h1>Perfil</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'app_tickets:view_panel_principal' %}">Mi Dashboard</a></li>
+        <li class="breadcrumb-item active">Perfil</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section profile">
+    <div class="row">
+      <div class="col-xl-4">
+
+        <div class="card">
+          <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+            <img src="{% static 'assets/img/profile.png' %}" alt="Profile" class="rounded-circle">
+            <h2>{{ request.user.first_name }} {{ request.user.last_name }}</h2>
+            <h3>{{ perfil_usuario.nombre_puesto }}</h3>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-xl-8">
+
+        <div class="card">
+          <div class="card-body pt-3">
+            <!-- Bordered Tabs -->
+            <ul class="nav nav-tabs nav-tabs-bordered">
+
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Detalles</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Cambiar Contraseña</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Enviar comentarios</button>
+              </li>
+
+
+
+            </ul>
+            <div class="tab-content pt-2">
+
+              <div class="tab-pane fade show active profile-overview" id="profile-overview">
+
+                <h5 class="card-title">Detalles del perfil</h5>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label ">Nombre completo</div>
+                  <div class="col-lg-9 col-md-8">{{perfil_usuario.nombre_completo}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Departamento</div>
+                  <div class="col-lg-9 col-md-8">{{ perfil_usuario.departamento.descripcion_departamento }}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Puesto</div>
+                  <div class="col-lg-9 col-md-8">{{perfil_usuario.nombre_puesto}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Nombre de usuario</div>
+                  <div class="col-lg-9 col-md-8">{{ user.username }}</div>
+                </div>
+
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Teléfono</div>
+                  <div class="col-lg-9 col-md-8">{{perfil_usuario.telefono_usuario}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Correo electrónico</div>
+                  <div class="col-lg-9 col-md-8">{{user.email}}</div>
+                </div>
+
+              </div>
+
+
+              <div class="tab-pane fade pt-3" id="profile-settings">
+
+                <!-- Settings Form -->
+                <form>
+
+                  <div class="row mb-3">
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                    <div class="col-md-8 col-lg-9">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="changesMade" checked>
+                        <label class="form-check-label" for="changesMade">
+                          Changes made to your account
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="newProducts" checked>
+                        <label class="form-check-label" for="newProducts">
+                          Information on new products and services
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="proOffers">
+                        <label class="form-check-label" for="proOffers">
+                          Marketing and promo offers
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled>
+                        <label class="form-check-label" for="securityNotify">
+                          Security alerts
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                  </div>
+                </form><!-- End settings Form -->
+
+              </div>
+
+              <div class="tab-pane fade pt-3" id="profile-change-password">
+                <!-- Change Password Form -->
+                <form id="password-change-form"  class="row g-3 needs-validation" novalidate method="post">
+                  {% csrf_token %}
+
+                  <div class="row mb-3">
+                    <label for="password_actual" class="col-md-4 col-lg-3 col-form-label">Contraseña actual</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="password_actual" type="password" class="form-control" id="password_actual" required>              
+                    </div>
+                  </div>
+                
+
+                  <div class="row mb-3">
+                    <label for="password_nueva" class="col-md-4 col-lg-3 col-form-label">Nueva contraseña</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="password_nueva" type="password" class="form-control" id="password_nueva" aria-describedby="passwordHelpBlock" required>
+                    </div>
+                  </div>
+
+
+                  <div class="row mb-3">
+                    <label class="col-md-4 col-lg-3 col-form-label"></label>
+                    <div class="col-md-8 col-lg-9">
+                      <!-- INICIO | REQUISITOS DE SEGURIDAD PARA CONTRASEÑA -->
+                      <div class="icon-label-container">
+                        <i id="uppercase-icon" class="bi bi-x-circle-fill invalid"></i>
+                        <label id="uppercase-label" class="text-left small">Uso de mayúsculas.</label>
+                      </div>
+                      <div class="icon-label-container">
+                        <i id="lowercase-icon" class="bi bi-x-circle-fill invalid"></i>
+                        <label id="lowercase-label" class="text-left small">Uso de minúsculas.</label>
+                      </div>
+                      <div class="icon-label-container">
+                        <i id="symbol-icon" class="bi bi-x-circle-fill invalid"></i>
+                        <label id="symbol-label" class="text-left small">Uso de símbolos.</label>
+                      </div>
+                      <div class="icon-label-container">
+                        <i id="length-icon" class="bi bi-x-circle-fill invalid"></i>
+                        <label id="length-label" class="text-left small">Mínimo de 8 caracteres.</label>
+                      </div>
+                      <div class="icon-label-container">
+                        <i id="number-icon" class="bi bi-x-circle-fill invalid"></i>
+                        <label id="number-label" class="text-left small">Uso mínimo de 2 números.</label>
+                      </div>
+                    </div>
+                  </div>
+                      <!-- FINAL | REQUISITOS DE SEGURIDAD PARA CONTRASEÑA -->  
+
+
+
+                      <div class="col-12 d-flex align-items-center">
+                    <i id="password-match-icon" class="bi bi-x-circle-fill invalid me-2"></i>
+                    <label for="password_confirmacion" class="col-md-4 col-lg-3 col-form-label">Confirma tu contraseña</label>
+                    
+                    <div class="col-md-7 col-lg-7">
+                      <input name="password_confirmacion" type="password" class="form-control" id="password_confirmacion" required>
+                    </div>
+                  </div>
+
+
+                  <div class="col-12 d-flex align-items-center">
+                    
+                    <input type="checkbox" class="btn-check" id="cerrar_sesion" name="cerrar_sesion" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="cerrar_sesion">Cerrar sesión?
+                      <i class="bi bi-check2-circle ms-1" style="font-size: 1.35rem;"></i>
+
+                    </label>
+                    <br>
+                    
+       
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
+                  </div>
+                </form><!-- End Change Password Form -->
+
+              </div>
+
+            </div><!-- End Bordered Tabs -->
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+<!-- INICIO | MODAL: ALERTA DE VALIDACIÓN -->
+<div class="modal fade" id="modalValidacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Error</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="modalMessage">
+              <!-- El mensaje se actualizará dinámicamente -->
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- FINAL | MODAL: ALERTA DE VALIDACIÓN -->
+
+<!-- INICIO | MODAL: CONFIRMACIÓN -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modalConfirmacionLabel">Advertencia</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              ¿Está seguro de que desea confirmar la operación?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+              <button type="button" class="btn btn-outline-primary" id="confirmarEnvio">Confirmar</button>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- FINAL | MODAL: CONFIRMACIÓN -->
+
+<!-- INICIO | MODAL: Success -->
+<div class="modal fade" id="modalExitoso" tabindex="-1" aria-labelledby="modalSuccessLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modalSuccessLabel">Cambio de contraseña</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Has cambiado tu contraseña exitosamente.
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- FINAL | MODAL: Success -->
+
+  </section>
+
+
+
+
+  <script>
+    // Se ejecuta cuando el documento HTML se ha cargado por completo
+    document.addEventListener('DOMContentLoaded', function() {
+      // Se obtienen los elementos del DOM que representan los campos de contraseña
+      const passwordNueva = document.getElementById('password_nueva');
+      const passwordConfirmacion = document.getElementById('password_confirmacion');
+      const passwordMatchIcon = document.getElementById('password-match-icon'); // Icono que indica si las contraseñas coinciden
+  
+      // Expresiones regulares para validar los requisitos de la contraseña
+      const uppercaseRegex = /[A-Z]/; // Debe tener al menos una letra mayúscula
+      const lowercaseRegex = /[a-z]/; // Debe tener al menos una letra minúscula
+      const numberRegex = /\d/g; // Debe tener al menos dos dígitos
+      const symbolRegex = /[\W_]/; // Debe tener al menos un símbolo o guion bajo
+  
+      // Función que valida la contraseña según los requisitos definidos
+      function validatePassword() {
+        const password = passwordNueva.value;
+  
+        // Verifica si el campo de la contraseña está vacío
+        if (password === '') {
+          document.getElementById('uppercase-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('lowercase-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('symbol-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('length-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('number-icon').className = 'bi bi-x-circle-fill invalid';
+
+
+                
+
+          return; // Sale de la función si el campo está vacío
+        }
+  
+        const isUppercase = uppercaseRegex.test(password);
+        const isLowercase = lowercaseRegex.test(password);
+        const isNumber = (password.match(numberRegex) || []).length >= 2; // Verifica que haya al menos dos números
+        const isSymbol = symbolRegex.test(password);
+        const isLengthValid = password.length >= 8; // Longitud mínima de la contraseña
+  
+        // Actualiza los iconos de validación en función del cumplimiento de cada requisito
+        document.getElementById('uppercase-icon').className = isUppercase ? 'bi bi-check-circle-fill valid' : 'bi bi-x-circle-fill invalid';
+        document.getElementById('lowercase-icon').className = isLowercase ? 'bi bi-check-circle-fill valid' : 'bi bi-x-circle-fill invalid';
+        document.getElementById('symbol-icon').className = isSymbol ? 'bi bi-check-circle-fill valid' : 'bi bi-x-circle-fill invalid';
+        document.getElementById('length-icon').className = isLengthValid ? 'bi bi-check-circle-fill valid' : 'bi bi-x-circle-fill invalid';
+        document.getElementById('number-icon').className = isNumber ? 'bi bi-check-circle-fill valid' : 'bi bi-x-circle-fill invalid';
+      }
+  
+      // Función que verifica si las contraseñas ingresadas coinciden
+      function checkPasswordMatch() {
+        if (passwordNueva.value && passwordNueva.value === passwordConfirmacion.value) {
+          passwordConfirmacion.setCustomValidity(''); // Contraseñas coinciden, es válido
+          passwordMatchIcon.className = 'bi bi-check-circle-fill valid me-2'; // Cambia el icono a válido
+        } else {
+          passwordConfirmacion.setCustomValidity('Las contraseñas no coinciden'); // Contraseñas no coinciden, muestra mensaje de error
+          passwordMatchIcon.className = 'bi bi-x-circle-fill me-2 invalid'; // Cambia el icono a inválido
+        }
+      }
+  
+      // Escucha los eventos de entrada en los campos de contraseña y valida en tiempo real
+      passwordNueva.addEventListener('input', function() {
+        validatePassword();
+        checkPasswordMatch();
+      });
+  
+      // Valida si las contraseñas coinciden al escribir en el campo de confirmación
+      passwordConfirmacion.addEventListener('input', checkPasswordMatch);
+    });
+  
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('password-change-form');
+      const modalValidacion = new bootstrap.Modal(document.getElementById('modalValidacion'));
+      const modalConfirmacion = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+      const modalExitoso = new bootstrap.Modal(document.getElementById('modalExitoso'));
+      const modalMessage = document.getElementById('modalMessage');
+      const confirmarEnvioButton = document.getElementById('confirmarEnvio');
+    
+      // Validar el formulario antes de enviar
+      form.addEventListener('submit', function (event) {
+          event.preventDefault(); // Prevenir el envío del formulario
+    
+          const passwordActual = document.getElementById('password_actual').value;
+          const passwordNueva = document.getElementById('password_nueva').value;
+          const passwordConfirmacion = document.getElementById('password_confirmacion').value;
+    
+          // Validaciones básicas
+          if (!passwordActual || !passwordNueva || !passwordConfirmacion) {
+              mostrarErrorModal('Por favor, completa todos los campos.');
+              return;
+          }
+    
+          if (passwordNueva !== passwordConfirmacion) {
+              mostrarErrorModal('Las nuevas contraseñas no coinciden.');
+              return;
+          }
+    
+          if (!validarCriteriosPassword(passwordNueva)) {
+              mostrarErrorModal('La nueva contraseña no cumple con los requisitos de seguridad.');
+              return;
+          }
+    
+          // Si pasa todas las validaciones, se muestra el modal de confirmación
+          modalConfirmacion.show();
+      });
+    
+      // Función para mostrar el modal de error
+      function mostrarErrorModal(mensaje) {
+          modalMessage.textContent = mensaje;
+          modalValidacion.show();
+          resetIconosValidacion(); // Resetea los iconos de validación al mostrar el modal de error
+      }
+    
+      // Función de validación de la contraseña
+      function validarCriteriosPassword(password) {
+          const longitud = password.length >= 8;
+          const mayusculas = /[A-Z]/.test(password);
+          const minusculas = /[a-z]/.test(password);
+          const simbolos = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+          const numeros = (password.match(/\d/g) || []).length >= 2;
+    
+          return longitud && mayusculas && minusculas && simbolos && numeros;
+      }
+  
+      // Función para resetear los iconos de validación
+      function resetIconosValidacion() {
+          document.getElementById('uppercase-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('lowercase-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('symbol-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('length-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('number-icon').className = 'bi bi-x-circle-fill invalid';
+          document.getElementById('password-match-icon').className = 'bi bi-x-circle-fill me-2 invalid';
+
+                  // Limpiar mensajes de validación personalizados
+        document.getElementById('password_nueva').setCustomValidity('');
+        document.getElementById('password_confirmacion').setCustomValidity('');
+                // Limpiar mensajes de validación personalizados
+        document.getElementById('password_actual').setCustomValidity('');
+           
+      }
+    
+    // Enviar formulario con AJAX
+    function enviarFormulario() {
+      const formData = new FormData(form);
+      
+      fetch("{% url 'app_autenticacion:funcion_cambiar_password_usuario_ajax' %}", {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              // Mostrar modal de éxito
+              modalExitoso.show();
+              if (data.redirect) {
+                  // Redirigir al usuario si hay una URL de redirección
+                  window.location.href = data.redirect;
+              }
+          } else {
+              mostrarErrorModal(data.error);
+          }
+      })
+      .catch(error => {
+          mostrarErrorModal('Ocurrió un error inesperado.');
+      });
+  }
+
+  // Agregar evento al botón de confirmar en el modal de confirmación
+  confirmarEnvioButton.addEventListener('click', function () {
+      modalConfirmacion.hide(); // Ocultar el modal de confirmación
+
+      enviarFormulario(); // Enviar el formulario
+      resetIconosValidacion(); // Resetea los iconos de validación después de enviar el formulario
+      form.reset();
+      
+  });
+});
+</script>
+{% endblock contenido %}

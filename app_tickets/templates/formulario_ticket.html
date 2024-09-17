@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block contenido %}
+
+<!-- CSS for intl-tel-input -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/css/intlTelInput.css">
+
+<link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
+
+
+
+<div class="pagetitle"> <!-- INICIO: TITULO DE PAGINA / DETALLES DE TICKET -->
+   <h1>Detalles del ticket</h1>
+
+
+<!-- COMPONENTES DE NAVEGACION ENTRE PAGINAS -->   
+   <nav>
+      <ol class="breadcrumb">
+         <li class="breadcrumb-item">
+            <a href="{% url 'app_tickets:view_panel_principal' %}">Mi Dashboard</a>
+         </li>
+         <li class="breadcrumb-item">
+            <a href="{% url 'app_tickets:view_tabla_ticket' %}">Mis tickets</a>
+         </li>
+
+         <li class="breadcrumb-item">Ticket: #{{ ticket.numero_ticket}} </li>
+      </ol>
+   </nav>
+</div>
+<!-- FINAL: TITULO DE PAGINA / DETALLES DE TICKET -->
+
+
+
+<div class="row mb-2">
+    <div class="col-auto">
+       <div class="btn-group btn-group-sm" role="group" aria-label="Small button group">
+          <!-- Botón Guardar -->
+          <button type="button" class="btn btn-outline-primary" id="guardar">
+             GUARDAR CAMBIOS | NOTA PRIVADA
+             <i class="ri ri-save-3-line ms-2" style="font-size: 1.25rem;"></i>
+          </button>
+
+          <!-- Botón Respuesta -->
+          <button type="button" class="btn btn-outline-primary"id="enviar">
+             ENVIAR RESPUESTA
+             <i class="ri ri-send-plane-fill ms-2" style="font-size: 1.25rem;"></i>
+          </button>
+       </div>
+    </div>
+ </div>
+
+      <div class="col-sm-1 d-flex align-items-center">
+
+     </div>
+      <!-- Puedes agregar más botones u opciones aquí si lo deseas -->
+   </div>
+
+
+
+<!-- INICIO: CONTENEDOR DE PAGINA-->
+<section class="section dashboard">
+
+
+
+   <div class="row" style="background-color: #F6F9FF;">
+
+
+      <!-- COLUMNA PARA NOTAS-->
+      <div class="col-lg-9">
+         <div class="row border rounded  focus-ring-on-hover" style="
+            overflow-y: auto;
+            height: 525px;
+            scrollbar-width: thin;
+            margin-left: 3px;
+            margin-right: 21px;
+
+            background-color: #F6F9FF;
+            " id="notas-container">
+            <div class="card_custom" style="
+               margin-bottom: 0px;
+               padding-left: 0px;
+               padding-right: 0px;
+               box-shadow: none; 
+               margin-top: 20px;
+               ">
+               {% for nota in notas %}
+               <div class="card" style="box-shadow: none; margin-left: 10px; margin-right: 10px;" >
+                <div class="card-header">
+                    
+                    {{ nota.fecha_nota|date:"d/m/Y - h:i:s A" }}
+
+                </div>
+                <div class="card-body">
+                     <h5 class="card-title">{{nota.autor}}</h5>
+                     <!-- Quill Editor Bubble -->
+                     {{ nota.descripcion_notas }}
+                     <!-- End Quill Editor Bubble -->
+                  </div>
+               </div>
+               {% endfor %}
+            </div>
+
+
+         </div>
+
+
+<!-- INICIO: FORMULARIO -->         
+         <form role="form" id="formulario_nota" name="formulario_nota" method="POST" action="{% url 'app_tickets:view_agregar_nota_ajax' ticket.id %}">
+            {% csrf_token %}
+
+
+
+<!-- INICIO: SECCION DE TEXTO PARA NOTAS/RESPUESTAS -->            
+ <div class="row footer_custom">
+    <div class="col-sm-12">
+       <!-- Fila de opciones encima del textarea -->
+
+ 
+       <!-- Input group para el textarea y el icono -->
+       <div class="form-floating">
+        <textarea class="form-control" style="height: 100px; resize: none;" name="descripcion_notas" id="descripcion_notas" placeholder="Escribe tu comentario o respuesta aquí"></textarea>
+        <label for="descripcion_notas">Escribe aqui tu comentario o respuesta</label>
+     </div>
+    </div>
+ </div>
+<!-- FINAL: SECCION DE TEXTO PARA NOTAS/RESPUESTAS -->
+
+      </div>
+<!-- FINAL: COLUMNA PARA NOTAS-->
+
+
+      <!-- INICIO: COLUMNAS DE EL LADO DERECHO -->
+      <div class="col-lg-3">
+         <div class="row">
+
+      <!-- INICIO: FILA PARA EL FORMULARIO DE CONTACTO -->     
+            <div class="col-xxl-12 col-md-6">
+               <div class="card">
+                <div class="filter">  <!-- SELECTOR DE FILTROS -->
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                      <li class="dropdown-header text-start">
+                        <h6>Filtrar</h6>
+                      </li>
+                      <li><a class="dropdown-item" href="?filter=hoy">Hoy</a></li>
+                      <li><a class="dropdown-item" href="?filter=este_mes">Este Mes</a></li>
+                      <li><a class="dropdown-item" href="?filter=este_año">Este Año</a></li>
+                    </ul>
+                  </div> <!-- FINAL: SELECTOR DE FILTROS -->
+                  <div class="card-body">
+                     <h5 class="card-title">CONTACTO
+                        <i class="fa fa-envelope"></i>
+                     </h5>
+
+                     <div class="row g-3">
+
+                        <div class="col-md-6">
+                           <label for="nombre_contacto" class="form-label">Nombre</label>
+                           <input type="text" name="nombre_contacto"  id="nombre_contacto" placeholder="Nombre" class="form-control" value="{{ ticket.contacto.nombre_contacto }}" />
+
+                        </div>
+
+                        <div class="col-md-6">
+                           <label for="apellido_contacto" class="form-label">Apellido</label>
+                           <input type="text" name="apellido_contacto" id="apellido_contacto"  class="form-control" placeholder="Apellido" value="{{ ticket.contacto.apellido_contacto}}" />
+                        </div>
+
+    
+                        <div class="col-7">
+                           <label for="email_contacto" class="form-label">Correo electronico</label>
+                           <input type="email" name="email_contacto" id="email_contacto"   class="form-control" placeholder="Correo electronico" value="{{ ticket.contacto.email_contacto }}" />
+                        </div>
+ 
+                        <div class="col-md-5">
+                            <label for="telefono_contacto" class="form-label">Telefono</label>
+                            <input type="phone2numeric" name="telefono_contacto"  id="telefono_contacto"  class="form-control" placeholder="Telefono" value="{{ ticket.contacto.telefono_contacto }}" />
+                         </div>                         
+
+
+
+                     </div>
+
+                  </div>
+
+
+      <!-- FINAL: FILA PARA EL FORMULARIO DE CONTACTO -->     
+
+
+      <!-- INICIO: FILA PARA EL FORMULARIO DE DETALLES -->     
+
+
+                  <div class="card-body">
+                     <h5 class="card-title">DETALLES</h5>
+
+                     <div class="row g-3">
+
+                        <div class="col-md-5">
+                            <label for="select_producto" class="form-label">Producto</label>
+                            <select class="form-select" id="select_producto" name="select_producto" aria-label="Seleccione un producto">
+                                {% if ticket.producto %}
+                                    <option value="{{ ticket.producto.id }}" selected>{{ ticket.producto.descripcion_producto }}</option>
+                                    {% for producto in productos %}
+                                        {% if producto.id != ticket.producto.id %}
+                                            <option value="{{ producto.id }}">{{ producto.descripcion_producto }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="" selected>Sin asignar</option>
+                                    {% for producto in productos %}
+                                        <option value="{{ producto.id }}">{{ producto.descripcion_producto }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <label for="categoria_select" class="form-label">Categoría</label>
+                            <select class="form-select" id="categoria_select" name="categoria_select" aria-label="Seleccione una categoría">
+                                {% if ticket.categoria %}
+                                    <option value="{{ ticket.categoria.id }}" selected>{{ ticket.categoria.descripcion_categoria }}</option>
+                                    {% for categoria in categorias %}
+                                        {% if categoria.id != ticket.categoria.id %}
+                                            <option value="{{ categoria.id }}">{{ categoria.descripcion_categoria }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="" selected>Sin asignar</option>
+                                    {% for categoria in categorias %}
+                                        <option value="{{ categoria.id }}">{{ categoria.descripcion_categoria }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+          
+          
+                       <div class="col-md-6">
+                        <label for="prioridad_select" class="form-label">Prioridad</label>
+                        <select class="form-select" id="prioridad_select" name="prioridad_select" aria-label="Seleccione una prioridad" {% if user_group != 'Supervisor' %} disabled {% endif %}>
+                            {% if ticket.prioridad %}
+                                <option value="{{ ticket.prioridad.id }}" selected>{{ ticket.prioridad.descripcion_prioridad }}</option>
+                                {% for prioridad in lista_prioridad %}
+                                    {% if prioridad.id != ticket.prioridad.id %}
+                                        <option value="{{ prioridad.id }}">{{ prioridad.descripcion_prioridad }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <option value="" selected>Sin asignar</option>
+                                {% for prioridad in lista_prioridad %}
+                                    <option value="{{ prioridad.id }}">{{ prioridad.descripcion_prioridad }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="status_select" class="form-label">Status</label>
+                        <select class="form-select" id="status_select" name="status_select" aria-label="Default select example" name="status_consulta">
+                            <option value="{{ ticket.status.id }}" selected>{{ ticket.status.descripcion_status }}</option>
+                            {% for status in lista_status %}
+                                {% if status.id != ticket.status.id %}
+                                    <option value="{{ status.id }}">{{ status.descripcion_status }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="select_departamento" class="form-label">Departamento</label>
+                        <select class="form-select" id="select_departamento" name="select_departamento" aria-label="Seleccione una prioridad" {% if user_group != 'Supervisor' %} disabled {% endif %}>
+                            {% if ticket.departamento %}
+                                <option value="{{ ticket.departamento.id }}" selected>{{ ticket.departamento.descripcion_departamento }}</option>
+                                {% for departamento in departamentos_lista %}
+                                    {% if departamento.id != ticket.departamento.id %}
+                                        <option value="{{ departamento.id }}">{{ departamento.descripcion_departamento }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <option value="" selected>Sin asignar</option>
+                                {% for departamento in departamentos_lista %}
+                                    <option value="{{ departamento.id }}">{{ departamento.descripcion_departamento }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="select_usuario" class="form-label">Asignado a:</label>
+                        <select class="form-select" id="select_usuario" name="select_usuario" aria-label="Seleccione un usuario" required>
+                            {% if ticket.usuario %}
+                                <option value="{{ ticket.usuario.id }}" selected>{{ ticket.usuario.first_name }} {{ ticket.usuario.last_name }} (Usuario: {{ticket.usuario.username}} | {{contexto_perfil}})</option>
+                                {% for perfil in perfiles_lista %}
+                                    {% if perfil.user.id != ticket.usuario.id %}
+                                        <option value="{{ perfil.user.id }}">{{ perfil.user.first_name }} {{ perfil.user.last_name }} (Usuario: {{perfil.user.username}} |  {{ perfil.nombre_puesto }})</option>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <option value="" selected>Sin asignar</option>
+                                {% for perfil in perfiles_lista %}
+                                    <option value="{{ perfil.user.id }}">{{ perfil.user.first_name }} {{ perfil.user.last_name }} (Usuario: {{perfil.user.username}} | {{ perfil.nombre_puesto }})</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    
+
+                    <input type="hidden" name="accion" id="accion">
+
+                    
+
+                     </div>
+
+                  </div>
+               </div>
+            </div>
+      <!-- FINAL: FILA PARA EL FORMULARIO DE DETALLES -->     
+
+
+         </div>
+      </div>
+      <!-- FINAL: COLUMNAS DE EL LADO DERECHO -->
+
+   </div>
+</form>
+<!-- FINAL: FORMULARIO -->
+
+
+</section>
+<!-- FINAL: CONTENEDOR DE PAGINA-->
+
+
+
+<!-- MODAL: ALERTA DE VALIDACIÓN -->
+<div class="modal fade" id="modalValidacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Advertencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalMessage">
+                <!-- El mensaje se actualizará dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL: CONFIRMACIÓN DE ENVÍO -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmacionLabel">Advertencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea confirmar la operación?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-primary" id="confirmarEnvio">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/custom_scripts_ticket_formulario.js' %}"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.5.0/build/js/intlTelInput.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
+
+{% endblock %}
+

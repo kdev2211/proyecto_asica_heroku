@@ -1,0 +1,499 @@
+{% extends "base.html" %}
+{% block title %}Tickets{% endblock title %}
+{% load static %}
+{% block contenido %}
+
+<div class="pagetitle"> <!-- INICIO: TITULO DE PAGINA | MIS TICKETS -->         
+    <h1>Usuarios</h1>
+
+    <!-- ELEMENTOS DE NAVEGACION ENTRE PAGINAS -->     
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'app_tickets:view_panel_principal' %}">Mi Dashboard</a>
+            </li>
+            <li class="breadcrumb-item">Usuarios</li>
+        </ol>
+    </nav>
+</div><!-- FINAL DE EL TITULO DE PAGINA -->
+
+<!-- INICIO: CONTENEDOR DE PAGINA-->       
+<section class="section">
+    <div class="row">
+
+        <!-- INICIO: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS PARA SUPERVISOR -->    
+        <div class="card">
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-sm-2">
+                        <h5 class="card-title">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalDialogScrollable">
+                                AGREGAR A UN USUARIO +
+                            </button>
+                        </h5> 
+                    </div>
+                </div>
+
+                <!-- INICIO: TABLA DE TICKETS-->       
+                <table class="table datatable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">Nombre de Usuario</th>
+                            <th scope="col">Puesto</th>
+                            <th scope="col">Numero Telefonico</th>
+                            <th scope="col">Correo Electronico</th>
+                            <th scope="col" style="text-align:center;">Status de Usuario</th>
+                            <th scope="col" style="text-align:center;">Editar</th>
+                            <th scope="col" style="text-align:center;">Reenviar invitación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuarios in usuarios_lista %}
+                            <tr>
+                                <td>{{ usuarios.user.first_name }}</td>
+                                <td>{{ usuarios.user.last_name }}</td>
+                                <td>{{ usuarios.user.username }}</td>
+                                <td>{{ usuarios.nombre_puesto }}</td>
+                                <td>{{ usuarios.telefono_usuario }}</td>
+                                <td>{{ usuarios.user.email }}</td>
+                                <td style="text-align:center;">
+                                    {% if usuarios.user.is_active == True %}
+                                        Activo <i class="bi bi-check-circle-fill" style="color:green;"></i>
+                                    {% elif usuarios.user.is_active == False %}
+                                        Inactivo <i class="bi bi-x-circle-fill" style="color:red;"></i>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align:center;"><a href='' title="Editar Usuario" data-bs-toggle="modal" data-bs-target="#modal{{usuarios.user.id}}"><i class="bi bi-pencil-square h3" ></a></i></td>   
+                                <td style="text-align:center;">
+                                    <a href="#" title="Reenviar invitación" data-id="{{ usuarios.user.id }}" class="reenviar-invitacion">
+                                        <i class="bi bi-envelope h3"></i>
+                                    </a>
+                                </td>
+
+                            </tr>
+
+        <!-- INICIO: MODAL PARA EDITAR USUARIOS -->   
+
+        <div class="modal fade" id="modal{{usuarios.user.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Datos del usuario:</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- INICIO: FORMULARIO DE EL MODAL -->          
+                        <form id="formActualizarUsuario{{ usuarios.user.id }}" role="form" method="POST" action="{% url 'app_autenticacion:funcion_actualizar_usuario' usuarios.user.id %}">
+                          {% csrf_token %}
+                      
+                          <div class="row">
+                            
+                              <div class="col-md-6">
+                                  <label for="nombre_usuario" class="form-label">Nombres:</label>
+                                  <input type="input" class="form-control" id="nombre_usuario" name="nombre_usuario" value="{{usuarios.user.first_name }}" required>
+                              </div>
+                      
+                              <div class="col-md-6">
+                                  <label for="apellido_usuario" class="form-label">Apellidos:</label>
+                                  <input type="input" class="form-control" id="apellido_usuario" name="apellido_usuario" value="{{usuarios.user.last_name }}"  required>
+                              </div>
+                          </div>
+
+                          <br>
+                      
+                          <div class="row">
+                              <div class="col-md-7">
+                                  <label for="email_usuario" class="form-label">Correo electronico:</label>
+                                  <input type="email" class="form-control" id="email_usuario" name="email_usuario" value="{{usuarios.user.email }}"  required>
+                              </div>
+                      
+                              <div class="col-md-5">
+                                  <label for="telefono_usuario" class="form-label">Telefono:</label>
+                                  <input type="input" class="form-control" id="telefono_usuario" name="telefono_usuario" value="{{ usuarios.telefono_usuario }}" required>
+                              </div>
+                          </div>
+                          <br>
+                          <div class="row">
+         
+                      
+                              <div class="col-md-6">
+                                  <label for="puesto_usuario" class="form-label">Nombre del puesto:</label>
+                                  <input type="input" class="form-control" id="puesto_usuario" name="puesto_usuario" value="{{ usuarios.nombre_puesto  }}" required>
+                              </div>
+
+
+                              
+                              <div class="col-md-6">
+                                <div class="row">
+                                   
+                                <label for="puesto_usuario" class="form-label">Status del usuario:</label>
+                            </div>
+                            {% if usuarios.user.last_login != None %}
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="userStatus" value="True" id="radioButtonActivo" {% if usuarios.user.is_active == True %}checked{% endif %}>
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                  Activo
+                                </label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" type="radio" name="userStatus" value="False" id="radioButtonInactivo" {% if usuarios.user.is_active == False %}checked{% endif %}>
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                  Inactivo
+                                </label>
+                              </div>
+
+                            
+                            </div>
+                            {% else %}
+                              <p style="font-size:0.7em;">El usuario aún no ha activado su cuenta.</p>
+
+                            {% endif  %}
+                          </div>
+                          <!-- FINAL: CAMPOS DEL FORMULARIO MODAL -->           
+                          
+                      
+                        <!-- FINAL: FORMULARIO DE EL MODAL -->  
+                    </div>
+
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
+                    </div>
+                  </form>
+                </div>
+            </div>
+        </div>
+        </div>
+        <!-- FINAL: MODAL PARA EDITAR USUARIOS -->  
+
+
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- FINAL: TABLA DE TICKETS-->
+            </div>
+        </div>
+        <!-- FINAL: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS -->   
+
+
+
+
+
+
+        <!-- INICIO: MODAL PARA INSERTAR TICKETS -->   
+        <div class="modal fade" id="modalDialogScrollable" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Datos del usuario:</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- INICIO: FORMULARIO DE EL MODAL -->          
+                        <form id="formAgregarUsuario" role="form" method="POST" action="{% url 'app_autenticacion:view_agregar_usuario_ajax' %}">
+                          {% csrf_token %}
+                      
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <label for="nombre_usuario" class="form-label">Nombres:</label>
+                                  <input type="input" class="form-control" id="nombre_usuario" name="nombre_usuario" required>
+                              </div>
+                      
+                              <div class="col-md-6">
+                                  <label for="apellido_usuario" class="form-label">Apellidos:</label>
+                                  <input type="input" class="form-control" id="apellido_usuario" name="apellido_usuario" required>
+                              </div>
+                          </div>
+                      
+                          <br></br>
+                          
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <label for="email_usuario" class="form-label">Correo electronico:</label>
+                                  <input type="email" class="form-control" id="email_usuario" name="email_usuario" required>
+                              </div>
+                      
+                              <div class="col-md-6">
+                                  <label for="telefono_usuario" class="form-label">Telefono:</label>
+                                  <input type="input" class="form-control" id="telefono_usuario" name="telefono_usuario" required>
+                              </div>
+                          </div>
+                          <br></br>
+                          <div class="row">
+                           
+                      
+                              <div class="col-md-6">
+                                  <label for="puesto_usuario" class="form-label">Nombre del puesto:</label>
+                                  <input type="input" class="form-control" id="puesto_usuario" name="puesto_usuario" required>
+                              </div>
+                          </div>
+                          <!-- FINAL: CAMPOS DEL FORMULARIO MODAL -->           
+                         
+                      
+                        <!-- FINAL: FORMULARIO DE EL MODAL -->  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
+                    </div>
+                  </form>
+                </div>
+            </div>
+        </div>
+        <!-- FINAL: MODAL PARA INVITAR A USUARIOS -->  
+
+
+<!-- MODAL: ALERTA DE VALIDACIÓN -->
+<div class="modal fade" id="modalValidacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Advertencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalMessage">
+                <!-- El mensaje se actualizará dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL: CONFIRMACIÓN DE ENVÍO -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmacionLabel">Advertencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea confirmar la operación?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-primary" id="confirmarEnvio">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL: CONFIRMACIÓN DE ENVÍO -->
+<div class="modal fade" id="modalConfirmacionActualizar" tabindex="-1" aria-labelledby="modalConfirmacionActualizarLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmacionActualizarLabel">Advertencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea confirmar la operación?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-primary" id="confirmarActualizacion">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+    </div>
+</section>
+
+
+
+<!-- FINAL: CONTENEDOR DE PAGINA-->
+<script>
+    document.getElementById('formAgregarUsuario').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevenir el envío normal del formulario
+    
+        // Mostrar modal de confirmación
+        $('#modalConfirmacion').modal('show');
+    });
+    
+    document.getElementById('confirmarEnvio').addEventListener('click', function() {
+        var form = document.getElementById('formAgregarUsuario');
+        var formData = new FormData(form);
+    
+        // Deshabilitar el botón de confirmación para evitar clics múltiples
+        var confirmarEnvioButton = document.getElementById('confirmarEnvio');
+        confirmarEnvioButton.disabled = true;
+    
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                // Mostrar mensaje de éxito en el modal de validación
+                document.getElementById('modalMessage').textContent = data.message || 'Usuario agregado con éxito.';
+                
+                // Cerrar el modal de confirmación
+                $('#modalConfirmacion').modal('hide');
+    
+                // Cerrar el modal de formulario
+                $('#modalDialogScrollable').modal('hide');
+    
+                // Mostrar el modal de validación con mensaje de éxito
+                $('#modalValidacion').modal('show');
+    
+                // Si no hay usuario existente, recargar la página después de mostrar el éxito
+                if (!data.existing) {
+                    setTimeout(function() {
+                        location.reload(false); // Recargar sin usar caché
+                    }, 2000); // Esperar 2 segundos antes de recargar
+                } else {
+                    // Si hay usuario existente, solo limpiar el formulario
+                    form.reset();
+                    confirmarEnvioButton.disabled = false; // Volver a habilitar el botón
+                }
+            } else {
+                // Mostrar mensaje de error
+                document.getElementById('modalMessage').textContent = 'Ocurrió un error al agregar el usuario.';
+                $('#modalValidacion').modal('show');
+                console.error('Error: Invalid data received.');
+            }
+        })
+        .catch(error => {
+            // Mostrar mensaje de error en caso de fallo de red o excepción
+            document.getElementById('modalMessage').textContent = 'Ocurrió un error al intentar agregar el usuario. Por favor, intenta de nuevo.';
+            $('#modalValidacion').modal('show');
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            // Asegurarse de habilitar el botón en caso de error o excepción
+            confirmarEnvioButton.disabled = false;
+        });
+    });
+</script>
+
+
+<script>
+    document.querySelectorAll('[id^="formActualizarUsuario"]').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevenir el envío normal del formulario
+
+            // Obtener datos del formulario
+            let formData = new FormData(form);
+            let actionUrl = form.getAttribute('action');
+
+            // Mostrar modal de confirmación
+            $('#modalConfirmacionActualizar').modal('show');
+
+            document.getElementById('confirmarActualizacion').onclick = function() {
+                // Cerrar el modal de confirmación
+                $('#modalConfirmacionActualizar').modal('hide');
+
+                // Enviar el formulario mediante AJAX
+                fetch(actionUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Mostrar mensaje de éxito en el modal de validación
+                        document.getElementById('modalMessage').textContent = data.message;
+                        $('#modalValidacion').modal('show');
+
+                        // Esperar 2 segundos antes de recargar la página
+                        setTimeout(function() {
+                            location.reload();
+                        }, 2000); // 2000 ms = 2 segundos
+                    } else {
+                        // Mostrar modal de error con el mensaje
+                        document.getElementById('modalMessage').textContent = data.message;
+                        $('#modalValidacion').modal('show');
+                    }
+                })
+                .catch(error => {
+                    // Mostrar cualquier error inesperado en el modal
+                    document.getElementById('modalMessage').textContent = 'Error inesperado: ' + error;
+                    $('#modalValidacion').modal('show');
+                });
+            };
+        });
+    });
+</script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.reenviar-invitacion').forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+
+                var userId = this.getAttribute('data-id'); // Obtener el ID del atributo data-id
+                var button = this; // Guardar referencia al botón
+
+                // Desactivar el botón después del primer clic
+                button.style.pointerEvents = 'none';  // Desactiva el botón para evitar múltiples clics
+                button.style.opacity = '0.5';  // Cambia la apariencia del botón (opcional)
+
+                fetch('{% url "app_autenticacion:funcion_reenviar_invitacion_ajax" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}' // Si usas CSRF
+                    },
+                    body: JSON.stringify({ id: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Actualiza el contenido del modal dinámicamente con el mensaje del servidor
+                    var modalMessage = document.getElementById('modalMessage');
+                    
+                    if (data.success) {
+                        modalMessage.innerHTML = data.message;
+                    } else {
+                        modalMessage.innerHTML = 'Error: ' + data.error;
+                    }
+
+                    // Muestra el modal de advertencia
+                    var modal = new bootstrap.Modal(document.getElementById('modalValidacion'));
+                    modal.show();
+                })
+                .catch(error => {
+                    // Manejar errores
+                    var modalMessage = document.getElementById('modalMessage');
+                    modalMessage.innerHTML = 'Error al procesar la solicitud.';
+                    
+                    var modal = new bootstrap.Modal(document.getElementById('modalValidacion'));
+                    modal.show();
+                })
+                .finally(() => {
+                    // Reactivar el botón después de completar la solicitud
+                    button.style.pointerEvents = 'auto';  // Reactiva el botón
+                    button.style.opacity = '1';  // Restaura la apariencia del botón
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock contenido %}

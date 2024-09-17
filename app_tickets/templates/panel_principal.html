@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+{% block title %}Tickets{% endblock title %}
+{% load static %}
+{% block contenido %}
+<section class="section dashboard"> <!-- CONTENEDOR DE EL DASHBOARD -->
+
+  <div class="pagetitle">
+
+  </div>
+    
+<div class="row mb-2">
+    <div class="col-auto ms-auto">
+        <a class="icon btn btn-outline-primary" href="#" data-bs-toggle="dropdown">
+            FILTRAR GRAFICOS
+            <i class="bi bi-filter-circle ms-2"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+            <li class="dropdown-header text-start">
+                <h6>Filtros</h6>
+            </li>
+            <li><a class="dropdown-item" href="?filter=hoy">Hoy</a></li>
+            <li><a class="dropdown-item" href="?filter=este_mes">Este Mes</a></li>
+            <li><a class="dropdown-item" href="?filter=este_año">Este Año</a></li>
+        </ul>
+    </div>
+</div>
+    <div class="row">
+
+      {% if user_group == 'Supervisor' %}
+      
+      <!-- COLUMNA DE EL LADO IZQUIERDO -->
+
+      <div class="col-lg-8">
+        <div class="row"> <!--  FILA DE ELEMENTOS EN PANTALLA: LADO IZQUIERDO -->
+
+          <!-- Sales Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card sales-card">
+
+
+<!-- INICIO DE TARJETA: TICKETS PENDIENTES -->
+              <div class="card-body">
+                <h5 class="card-title">Tickets Pendientes</h5> 
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-exclamation-lg"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>{{ tickets_pendientes }}</h6>
+                    <span class="text-danger small pt-1 fw-bold">{{ porcentaje_tickets_pendientes|floatformat:2 }}% </span> <span class="text-muted small pt-2 ps-1">del total de tickets</span>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+<!-- FINAL DE TARJETA: TICKETS PENDIENTES -->
+
+
+<!-- INICIO DE TARJETA: USUARIOS ACTIVOS -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card revenue-card">
+
+
+
+              <div class="card-body">
+                <h5 class="card-title">Usuarios Activos</h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-people"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>{{ sesiones_activas }}</h6>
+                    <span class="text-success small pt-1 fw-bold">{{ porcentaje_sesiones_activas|floatformat:2 }} %</span> <span class="text-muted small pt-2 ps-1">del total de usuarios</span>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+<!-- FINAL DE TARJETA: USUARIOS ACTIVOS -->
+
+
+
+<!-- INICIO DE TARJETA: TICKETS SIN USUARIOS ASIGNADOS -->
+          <div class="col-xxl-4 col-xl-12">
+
+            <div class="card info-card customers-card">
+
+
+              <div class="card-body">
+                <h5 class="card-title">Tickets Sin Usuario Asignado<span></span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person-dash-fill"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>{{ tickets_sin_asignar }}</h6>
+                    <span class="text-danger small pt-1 fw-bold">{{ porcentaje_tickets_sin_asignar|floatformat:2 }}  % </span><span class="text-muted small pt-2 ps-1">del total de tickets </span>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+<!-- FINAL DE TARJETA: TICKETS SIN USUARIOS ASIGNADOS -->
+
+
+
+<!-- INICIO DE TARJETA: TABLA (PENDIENTE) -->
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+
+    <div class="card-body">
+      <h5 class="card-title">Usuarios Conectados</h5>
+      <!-- Small tables -->
+      <table class="table datatable">
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">Nombre de Usuario</th>
+            <th scope="col">Email</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if total_usuarios_conectados %}
+            {% for usuarios in total_usuarios_conectados %}
+            <tr>
+              <td>{{ usuarios.user.first_name }}</td>
+              <td>{{ usuarios.user.last_name }}</td>
+              <td>{{ usuarios.user.username }}</td>
+              <td>{{ usuarios.user.email }}</td>
+              <td>
+                {% if usuarios.is_active %}
+                  Conectado <i class="bi bi-check-circle-fill" style="color:green;"></i>
+                {% else %}
+                  Desconectado <i class="bi bi-x-circle-fill" style="color:red;"></i>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center">Aún no hay datos disponibles</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- INICIO DE TARJETA: TABLA (PENDIENTE) -->
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+
+    <div class="card-body">
+      <h5 class="card-title">Tickets vistos recientemente</h5>
+      <!-- Small tables -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Ticket #</th>
+            <th scope="col">Contacto</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Categoría</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if tickets_recientes %}
+            {% for lista_tickets_recientes in tickets_recientes %}
+            <tr>
+              <td>{{ lista_tickets_recientes.ticket.numero_ticket }}</td>
+              <td>{{ lista_tickets_recientes.ticket.contacto.nombre_contacto }} {{ lista_tickets_recientes.ticket.contacto.apellido_contacto }}</td>
+              <td>{% if lista_tickets_recientes.ticket.producto.descripcion_producto == null %} Sin asignar {% else %} {{ lista_tickets_recientes.ticket.producto.descripcion_producto }} {% endif %}</td>
+              <td>{% if lista_tickets_recientes.ticket.categoria.descripcion_categoria == null %} Sin asignar {% else %} {{ lista_tickets_recientes.ticket.categoria.descripcion_categoria }} {% endif %}</td>
+              <td><span class="btnm btn-outline-{{lista_tickets_recientes.ticket.status.descripcion_status}} btn-sm">{{lista_tickets_recientes.ticket.status.descripcion_status}}</span></td>
+              <td style="text-align:center;"><a href='/helpdesk/ticket_tabla/ticket/{{ lista_tickets_recientes.ticket.id }}' title="Editar Ticket"><i class="bi bi-pencil-square h3"></i></a></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center">Aún no hay datos disponibles</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- FINAL DE TARJETA: TABLA (PENDIENTE) -->
+
+
+
+        </div>
+<!-- FINAL: FILA DE ELEMENTOS EN PANTALLA: LADO IZQUIERDO -->
+
+
+      </div>
+      <!-- FINAL DE LA COLUMNA DE EL LADO IZQUIERDO -->
+
+
+
+
+<!-- COLUMNA DE EL LADO DERECHO  -->
+      <div class="col-lg-4">
+
+<!-- GRAFICO DE TICKETS POR PRODUCTO -->
+<div class="card">
+
+
+  <div class="card-body pb-0">
+    <h5 class="card-title"><span>{{ filtro_actual|title }}</span></h5>
+      <!-- GRAFICO DE PASTEL -->
+    <div id="pieChart" style="min-height: 400px;" class="echart"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const ticketsPorProducto = JSON.parse('{{ tickets_por_producto|safe }}');
+
+        if (ticketsPorProducto.length > 0) {
+          const data = ticketsPorProducto.map(item => ({
+            value: item.count,
+            name: item.producto__descripcion_producto
+          }));
+
+          echarts.init(document.querySelector("#pieChart")).setOption({
+            title: {
+              text: 'Tickets por Producto',
+              subtext: '',
+              left: 'center'
+            },
+            tooltip: {
+              trigger: 'item'
+            },
+            legend: {
+              orient: 'vertical',
+              left: 'left'
+            },
+            series: [{
+              name: 'Tickets',
+              type: 'pie',
+              radius: '50%',
+              data: data,
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }]
+          });
+        } else {
+          document.querySelector("#pieChart").innerHTML = "<p>Aún no hay información para este período de tiempo.</p>";
+        }
+      });
+    </script>
+  </div>
+</div> <!-- FINAL DE EL GRAFICO DE TICKETS POR PRODUCTO -->
+
+
+<!-- INICIO: GRAFICO DE TICKETS POR CATEGORIA-->
+<div class="card">
+  <div class="card-body pb-0">
+    <h5 class="card-title"><span>{{ filtro_actual|title }}</span></h5>
+
+    <!-- INICIO: GRAFICO DE DONA -->
+    <div id="donutChart" style="min-height: 400px;" class="echart"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const ticketsPorCategoria = JSON.parse('{{ tickets_por_categoria|safe }}');
+
+        if (ticketsPorCategoria.length > 0) {
+          const data = ticketsPorCategoria.map(item => ({
+            value: item.count,
+            name: item.categoria__descripcion_categoria
+          }));
+
+          echarts.init(document.querySelector("#donutChart")).setOption({
+            title: {
+              text: 'Tickets por Categoria',
+              subtext: '',
+              left: 'center'
+            },
+            tooltip: {
+              trigger: 'item'
+            },
+            legend: {
+              top: '8%',
+              left: 'center'
+            },
+            series: [{
+              name: 'Tickets por Categoría',
+              type: 'pie',
+              radius: ['50%', '65%'],
+              avoidLabelOverlap: false,
+              label: {
+                show: false,
+                position: 'center'
+              },
+              emphasis: {
+                label: {
+                  show: true,
+                  fontSize: '18',
+                  fontWeight: 'bold'
+                }
+              },
+              labelLine: {
+                show: false
+              },
+              data: data
+            }]
+          });
+        } else {
+          document.querySelector("#donutChart").innerHTML = "<p>Aún no hay información para este período de tiempo.</p>";
+        }
+      });
+    </script>
+    <!-- FINAL: GRAFICO DE DONA -->
+
+  </div>
+</div>
+<!-- FINAL: GRAFICO DE TICKETS POR CATEGORIA-->
+
+
+
+
+      </div><!-- FINAL DE LA COLUMNA DE EL LADO DERECHO -->
+
+
+
+      {% else %}
+      
+     <!-- COLUMNA DE EL LADO IZQUIERDO -->
+
+     <div class="col-lg-8">
+      <div class="row"> <!--  FILA DE ELEMENTOS EN PANTALLA: LADO IZQUIERDO -->
+
+        <!-- Sales Card -->
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card sales-card">
+
+
+<!-- INICIO DE TARJETA: TICKETS PENDIENTES -->
+            <div class="card-body">
+              <h5 class="card-title">Tickets Pendientes</h5> 
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-exclamation-lg"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{ tickets_pendientes }}</h6>
+                  <span class="text-danger small pt-1 fw-bold">{{ porcentaje_tickets_pendientes|floatformat:2 }}% </span> <span class="text-muted small pt-2 ps-1">del total de tickets</span>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+<!-- FINAL DE TARJETA: TICKETS PENDIENTES -->
+
+
+
+
+
+<!-- INICIO DE TARJETA: TICKETS SIN USUARIOS ASIGNADOS -->
+        <div class="col-xxl-4 col-xl-12">
+
+          <div class="card info-card customers-card">
+
+
+            <div class="card-body">
+              <h5 class="card-title">Tickets Urgentes<span></span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-person-dash-fill"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{total_tickets_urgentes}}</h6>
+                  <span class="text-danger small pt-1 fw-bold">{{ porcentaje_tickets_urgentes|floatformat:2 }}% </span><span class="text-muted small pt-2 ps-1">del total de tickets </span>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+<!-- FINAL DE TARJETA: TICKETS SIN USUARIOS ASIGNADOS -->
+
+
+<!-- INICIO DE TARJETA: TABLA (PENDIENTE) -->
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+
+    <div class="card-body">
+      <h5 class="card-title">Tickets vistos recientemente</h5>
+      <!-- Small tables -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Ticket #</th>
+            <th scope="col">Contacto</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Categoría</th>
+            <th scope="col">Status</th>
+            <th scope="col">Editar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if tickets_recientes %}
+            {% for lista_tickets_recientes in tickets_recientes %}
+            <tr>
+              <td>{{ lista_tickets_recientes.ticket.numero_ticket }}</td>
+              <td>{{ lista_tickets_recientes.ticket.contacto.nombre_contacto }} {{ lista_tickets_recientes.ticket.contacto.apellido_contacto }}</td>
+              <td>{% if lista_tickets_recientes.ticket.producto.descripcion_producto == null %} Sin asignar {% else %} {{ lista_tickets_recientes.ticket.producto.descripcion_producto }} {% endif %}</td>
+              <td>{% if lista_tickets_recientes.ticket.categoria.descripcion_categoria == null %} Sin asignar {% else %} {{ lista_tickets_recientes.ticket.categoria.descripcion_categoria }} {% endif %}</td>
+              <td><span class="btnm btn-outline-{{lista_tickets_recientes.ticket.status.descripcion_status}} btn-sm">{{lista_tickets_recientes.ticket.status.descripcion_status}}</span></td>    
+              <td style="align=center;"><a href='/helpdesk/ticket_tabla/ticket/{{ lista_tickets_recientes.ticket.id }}' title="Editar Ticket"><i class="bi bi-pencil-square h3"></i></a></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center">Aún no hay datos disponibles</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- INICIO DE TARJETA: TABLA (PENDIENTE) -->
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+
+    <div class="card-body">
+      <h5 class="card-title">Tickets Urgentes</h5>
+      <!-- Small tables -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Ticket #</th>
+            <th scope="col">Contacto</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Categoría</th>
+            <th scope="col">Editar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if tickets_urgentes %}
+            {% for lista_tickets_urgentes in tickets_urgentes %}
+            <tr>
+              <td>{{ lista_tickets_urgentes.numero_ticket }}</td>
+              <td>{{ lista_tickets_urgentes.contacto.nombre_contacto }} {{ lista_tickets_urgentes.contacto.apellido_contacto }}</td>
+              <td>{% if lista_tickets_urgentes.producto.descripcion_producto == null %} Sin asignar {% else %} {{ lista_tickets_urgentes.producto.descripcion_producto }} {% endif %}</td>
+              <td>{% if lista_tickets_urgentes.categoria.descripcion_categoria == null %} Sin asignar {% else %} {{ lista_tickets_urgentes.categoria.descripcion_categoria }} {% endif %}</td>
+              <td style="text-align:center;"><a href='/helpdesk/ticket_tabla/ticket/{{ lista_tickets_urgentes.id }}' title="Editar Ticket"><i class="bi bi-pencil-square h3"></i></a></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center">Aún no hay datos disponibles</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+</div>
+
+    
+</div>
+</div>
+
+<!-- COLUMNA DE EL LADO DERECHO  -->
+<div class="col-lg-4">
+
+  <!-- GRAFICO DE TICKETS POR PRODUCTO -->
+  <div class="card">
+  
+  
+    <div class="card-body pb-0">
+      <h5 class="card-title"><span>{{ filtro_actual|title }}</span></h5>
+        <!-- GRAFICO DE PASTEL -->
+      <div id="pieChart" style="min-height: 400px;" class="echart"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const ticketsPorProducto = JSON.parse('{{ tickets_por_producto|safe }}');
+  
+          if (ticketsPorProducto.length > 0) {
+            const data = ticketsPorProducto.map(item => ({
+              value: item.count,
+              name: item.producto__descripcion_producto
+            }));
+  
+            echarts.init(document.querySelector("#pieChart")).setOption({
+              title: {
+                text: 'Tickets por Producto',
+                subtext: '',
+                left: 'center'
+              },
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                orient: 'vertical',
+                left: 'left'
+              },
+              series: [{
+                name: 'Tickets',
+                type: 'pie',
+                radius: '50%',
+                data: data,
+                emphasis: {
+                  itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  }
+                }
+              }]
+            });
+          } else {
+            document.querySelector("#pieChart").innerHTML = "<p>Aún no hay información para este período de tiempo.</p>";
+          }
+        });
+      </script>
+    </div>
+  </div> <!-- FINAL DE EL GRAFICO DE TICKETS POR PRODUCTO -->
+  
+  
+  <!-- INICIO: GRAFICO DE TICKETS POR CATEGORIA-->
+  <div class="card">
+    <div class="card-body pb-0">
+      <h5 class="card-title"><span>{{ filtro_actual|title }}</span></h5>
+  
+      <!-- INICIO: GRAFICO DE DONA -->
+      <div id="donutChart" style="min-height: 400px;" class="echart"></div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const ticketsPorCategoria = JSON.parse('{{ tickets_por_categoria|safe }}');
+  
+          if (ticketsPorCategoria.length > 0) {
+            const data = ticketsPorCategoria.map(item => ({
+              value: item.count,
+              name: item.categoria__descripcion_categoria
+            }));
+  
+            echarts.init(document.querySelector("#donutChart")).setOption({
+              title: {
+                text: 'Tickets por Categoria',
+                subtext: '',
+                left: 'center'
+              },
+              tooltip: {
+                trigger: 'item'
+              },
+              legend: {
+                top: '8%',
+                left: 'center'
+              },
+              series: [{
+                name: 'Tickets por Categoría',
+                type: 'pie',
+                radius: ['50%', '65%'],
+                avoidLabelOverlap: false,
+                label: {
+                  show: false,
+                  position: 'center'
+                },
+                emphasis: {
+                  label: {
+                    show: true,
+                    fontSize: '18',
+                    fontWeight: 'bold'
+                  }
+                },
+                labelLine: {
+                  show: false
+                },
+                data: data
+              }]
+            });
+          } else {
+            document.querySelector("#donutChart").innerHTML = "<p>Aún no hay información para este período de tiempo.</p>";
+          }
+        });
+      </script>
+      <!-- FINAL: GRAFICO DE DONA -->
+  
+    </div>
+  </div>
+  <!-- FINAL: GRAFICO DE TICKETS POR CATEGORIA-->
+  
+  
+  
+  
+        </div><!-- FINAL DE LA COLUMNA DE EL LADO DERECHO -->
+  
+
+      {% endif %}
+
+
+
+
+
+  </section> <!-- FINAL DE EL CONTENEDOR DE EL DASHBOARD -->
+
+
+  {% endblock contenido %}
+   

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Tickets{% endblock title %}
+{% load static %}
+{% block contenido %}
+
+<div class="pagetitle"> <!-- INICIO: TITULO DE PAGINA | MIS TICKETS -->         
+    <h1>Mis tickets</h1>
+
+    <!-- ELEMENTOS DE NAVEGACION ENTRE PAGINAS -->     
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'app_tickets:view_panel_principal' %}">Mi Dashboard</a></li>
+        <li class="breadcrumb-item">Mis tickets</li>
+      </ol>
+    </nav>
+  </div><!-- FINAL DE EL TITULO DE PAGINA -->
+
+  <!-- INICIO: CONTENEDOR DE PAGINA-->       
+  <section class="section">
+    <div class="row">
+
+
+<!-- INICIO: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS PARA SUPERVISOR -->    
+
+
+
+<div class="card">
+    <div class="card-body">
+
+
+
+ 
+
+
+
+<!-- INICIO: TABLA DE TICKETS-->       
+<table class="table datatable">
+        <thead>
+          <tr>
+            <th scope="col">Nombres</th>
+            <th scope="col">Apellidos</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Empresa</th>
+            <th scope="col">Email</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {% for contacto in lista_contactos%}
+          <tr>
+            <td>{{contacto.nombre_contacto}}</td>
+              <td>{{contacto.apellido_contacto}}</td>
+              <td>{{contacto.telefono_contacto}}</td>
+              <td>{{contacto.empresa_contacto}}</td>
+              <td>{{contacto.email_contacto}}</td>
+              
+
+                   
+          </tr>
+          
+          {% endfor %}
+      </tbody>
+      </table>
+<!-- FINAL: TABLA DE TICKETS-->       
+
+    </div>
+  </div>
+</div>
+<!-- FINAL: TARJETA/CONTENEDOR DE LA TABLA DE TICKETS -->      
+
+
+
+</section>
+
+      
+
+
+  {% endblock contenido %}
+   

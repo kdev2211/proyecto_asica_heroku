@@ -1,0 +1,1 @@
+web: gunicorn proyecto_asica_heroku.wsgi --log-file -

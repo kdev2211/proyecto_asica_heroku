@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Login</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/fabicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  
+    <!-- Vendor JS Files -->
+    <script src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/chart.js/chart.umd.js' %}"></script>
+    <script src="{% static 'assets/vendor/echarts/echarts.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/quill/quill.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/simple-datatables/simple-datatables.js' %}"></script>
+    <script src="{% static 'assets/vendor/tinymce/tinymce.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  
+    <!-- Template Main JS File -->
+    <script src="{% static 'assets/js/main.js' %}"></script>
+</head>
+
+<body>
+
+<!-- INICIO | MODAL: CAMBIO DE CONTRASEÑA -->
+
+<div class="modal fade" id="modalCambioPassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cambio de contraseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formForgotPassword" role="form" method="POST" action="{% url 'app_autenticacion:view_forgot_password_ajax' %}">
+          {% csrf_token %}
+          
+          <div class="row justify-content-center">
+            <div class="col-md-10">
+              <div class="mb-3 text-center">
+                <label for="usernameOrEmail" class="form-label">Introduce tu correo electronico</label>
+                <div class="input-group has-validation">
+                  <span class="input-group-text" id="inputGroupPrepend">@</span>
+                  <input type="text" name="forgot_password_email" class="form-control" id="forgot_password_email" required>
+                  <div class="invalid-feedback">Por favor, introduce tu nombre de usuario o correo electrónico.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-outline-primary" id="btnSubmit">Aceptar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL | MODAL: CAMBIO DE CONTRASEÑA -->
+
+
+<!-- INICIO | MODAL: FEEDBACK -->
+<div class="modal fade" id="modalFeedback" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Advertencia</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="modalMessage">
+              <!-- El mensaje se actualizará dinámicamente -->
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- FINAL | MODAL: FEEDBACK -->
+
+  <main> <!-- INICIO | CONTENEDOR: #main -->
+    <div class="container">
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+
+              <div class="d-flex justify-content-center py-4"> <!-- INCIO | Logo -->
+                <a href="index.html" class="logo d-flex align-items-center w-auto">
+                  <img src="{% static 'assets/img/fabicon.png' %}" alt="">
+                  <span class="d-none d-lg-block">ASICA Help Desk</span>
+                </a>
+              </div><!-- FINAL | Logo -->
+
+
+              <!-- INICIO | CONTENEDOR DE FORMULARIO LOGIN -->
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Iniciar sesión en tu cuenta</h5>
+                    <p class="text-center small">Introduce tu nombre de usuario o correo electrónico y contraseña</p>
+                  </div>
+
+                  {% if error %}
+                  <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                  </div>
+                  {% endif %}
+
+                  <form method="post" action="{% url 'app_autenticacion:login_view' %}" class="row g-3 needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="col-12">
+                      <label for="usernameOrEmail" class="form-label">Nombre de usuario o correo electrónico</label>
+                      <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrepend">@</span>
+                        <input type="text" name="username_or_email" class="form-control" id="usernameOrEmail" required>
+                        <div class="invalid-feedback">Por favor, introduce tu nombre de usuario o correo electrónico.</div>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="yourPassword" class="form-label">Contraseña</label>
+                      <input type="password" name="password" class="form-control" id="yourPassword" required>
+                      <div class="invalid-feedback">Por favor, introduce tu contraseña.</div>
+                    </div>
+
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Iniciar sesión</button>
+                    </div>
+
+                    <div class="col-12">
+                      <p class="small mb-0">¿Olvidaste tu contraseña? 
+                        <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#modalCambioPassword">
+                          Haz clic aquí
+                        </button>
+                      </p>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+              <!-- FINAL | CONTENEDOR DE FORMULARIO LOGIN -->
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main><!-- FINAL | CONTENEDOR: #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+
+
+</body>
+
+</html>
+
+<script>
+  document.getElementById('btnSubmit').addEventListener('click', function() {
+    let form = document.getElementById('formForgotPassword');
+    let emailInput = document.getElementById('forgot_password_email');
+    let emailValue = emailInput.value.trim();
+    let modalMessage = document.getElementById('modalMessage');
+    let modalTitle = document.querySelector('#modalFeedback .modal-title');
+    let modal = new bootstrap.Modal(document.getElementById('modalFeedback'));
+
+    // Validar el campo de correo electrónico
+    if (!emailValue) {
+        modalTitle.textContent = 'Error';
+        modalMessage.textContent = 'Correo electrónico no válido.';
+        modal.show();
+        return; // Salir de la función para evitar el envío del formulario
+    }
+
+    // Expresión regular para validar el formato del correo electrónico
+    let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(emailValue)) {
+        modalTitle.textContent = 'Error';
+        modalMessage.textContent = 'Correo electrónico no válido.';
+        modal.show();
+        return; // Salir de la función para evitar el envío del formulario
+    }
+
+    // Crear el FormData y enviar la solicitud
+    let formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            modalTitle.textContent = 'Solicitud enviada con éxito';
+            modalMessage.textContent = 'Se ha enviado un enlace de restablecimiento de contraseña a tu correo electrónico.';
+            
+            // Reiniciar el formulario
+            form.reset();
+        } else {
+            modalTitle.textContent = 'Error';
+            modalMessage.textContent = data.error;
+        }
+        
+        modal.show();
+    })
+    .catch(error => console.error('Error:', error));
+});
+  </script>
