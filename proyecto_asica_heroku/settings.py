@@ -186,8 +186,6 @@ SESSION_SAVE_EVERY_REQUEST = True
 LOGIN_URL = '/'  
 
 
-
-
 # Configuración del broker y backend de resultados usando variables de entorno de Heroku
 CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
