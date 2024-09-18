@@ -247,62 +247,65 @@
     
       <!-- Template Main JS File -->
       <script src="{% static 'assets/js/main.js' %}"></script>
+
+
+      
       <script>
-    function cargarNotificacionesWebSocket() {
-        const wsUrl = `ws://${window.location.host}/ws/notificaciones/`;
-        let notificacionesSocket = new WebSocket(wsUrl);
-    
-        notificacionesSocket.onclose = function(event) {
-            console.error("WebSocket cerrado inesperadamente. Intentando reconectar en 5 segundos...", event);
-            setTimeout(cargarNotificacionesWebSocket, 5000);
-        };
-    
-        notificacionesSocket.onmessage = function(event) {
-            console.log("Mensaje recibido del WebSocket:", event.data);
-    
-            const data = JSON.parse(event.data);
-            const badgeNumber = $(".badge.bg-primary.badge-number");
-            const headerText = $(".dropdown-header").first(); // Asegúrate de seleccionar el elemento correcto del DOM
-    
-            // Actualizar el badge y el texto de la cabecera
-            if (badgeNumber.length) {
-                let conteoActual = parseInt(badgeNumber.text());
-                badgeNumber.text(conteoActual + 1);
-                headerText.html(`Tienes ${conteoActual + 1} notificaciones.<a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>`);
-            } else {
-                // Si no existe el badge, crea uno con el número 1
-                $(".nav-icon").append('<span class="badge bg-primary badge-number">1</span>');
-                headerText.html(`Tienes 1 notificaciones.<a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>`);
-            }
-    
-            // Crear la nueva notificación en HTML
-            let nuevaNotificacion = `
-                <a href="#" class="notification-link" style="text-decoration: none; color:inherit;">
-                <li class="notification-item">
-                    <i class="${data.icono}"></i> 
-                    <div>
-                        <h6>${data.titulo}</h6>
-                        <p>${data.mensaje}</p>
-                        <p>Fecha: ${data.fecha}</p>
-                    </div>
-                </li>
-                </a>
-                <li><hr class="dropdown-divider"></li>`;
-    
-            // Insertar la notificación justo después de la cabecera
-            $("#dropdown-header-notifications").next().after(nuevaNotificacion);
-        };
-    
-        notificacionesSocket.onerror = function(error) {
-            console.error("WebSocket error:", error);
-        };
-    }
-    
-    $(document).ready(function() {
-        cargarNotificacionesWebSocket();
-    });
-    
-      </script>
+        function cargarNotificacionesWebSocket() {
+            const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const wsUrl = `${wsProtocol}${window.location.host}/ws/notificaciones/`;
+            let notificacionesSocket = new WebSocket(wsUrl);
+        
+            notificacionesSocket.onclose = function(event) {
+                console.error("WebSocket cerrado inesperadamente. Intentando reconectar en 5 segundos...", event);
+                setTimeout(cargarNotificacionesWebSocket, 5000);
+            };
+        
+            notificacionesSocket.onmessage = function(event) {
+                console.log("Mensaje recibido del WebSocket:", event.data);
+        
+                const data = JSON.parse(event.data);
+                const badgeNumber = $(".badge.bg-primary.badge-number");
+                const headerText = $(".dropdown-header").first(); // Asegúrate de seleccionar el elemento correcto del DOM
+        
+                // Actualizar el badge y el texto de la cabecera
+                if (badgeNumber.length) {
+                    let conteoActual = parseInt(badgeNumber.text());
+                    badgeNumber.text(conteoActual + 1);
+                    headerText.html(`Tienes ${conteoActual + 1} notificaciones.<a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>`);
+                } else {
+                    // Si no existe el badge, crea uno con el número 1
+                    $(".nav-icon").append('<span class="badge bg-primary badge-number">1</span>');
+                    headerText.html(`Tienes 1 notificaciones.<a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>`);
+                }
+        
+                // Crear la nueva notificación en HTML
+                let nuevaNotificacion = `
+                    <a href="#" class="notification-link" style="text-decoration: none; color:inherit;">
+                    <li class="notification-item">
+                        <i class="${data.icono}"></i> 
+                        <div>
+                            <h6>${data.titulo}</h6>
+                            <p>${data.mensaje}</p>
+                            <p>Fecha: ${data.fecha}</p>
+                        </div>
+                    </li>
+                    </a>
+                    <li><hr class="dropdown-divider"></li>`;
+        
+                // Insertar la notificación justo después de la cabecera
+                $("#dropdown-header-notifications").next().after(nuevaNotificacion);
+            };
+        
+            notificacionesSocket.onerror = function(error) {
+                console.error("WebSocket error:", error);
+            };
+        }
+        
+        $(document).ready(function() {
+            cargarNotificacionesWebSocket();
+        });
+    </script>
     
     
     
