@@ -62,7 +62,7 @@ def view_agregar_usuario_ajax(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre_usuario')
         apellido = request.POST.get('apellido_usuario')
-        email = request.POST.get('email_usuario')
+        email = request.POST.get('email_usuario').lower()
         telefono = request.POST.get('telefono_usuario')
         puesto = request.POST.get('puesto_usuario')
 
@@ -170,7 +170,7 @@ def funcion_actualizar_usuario(request, user_id):
             # Datos del formulario
             nombre_usuario = request.POST.get('nombre_usuario')
             apellido_usuario = request.POST.get('apellido_usuario')
-            email_usuario = request.POST.get('email_usuario')
+            email_usuario = request.POST.get('email_usuario').lower()
             telefono_usuario = request.POST.get('telefono_usuario')
             puesto_usuario = request.POST.get('puesto_usuario')
 
@@ -281,10 +281,10 @@ def login_view(request):
         username_or_email = request.POST.get('username_or_email')
         password = request.POST.get('password')
         
-        # Si se ingresa un correo electrónico, buscar el usuario por correo electrónico
         if '@' in username_or_email:
+            user_email = username_or_email.lower()
             try:
-                user = User.objects.get(email=username_or_email)
+                user = User.objects.get(email=user_email)
                 username = user.username
             except User.DoesNotExist:
                 user = None
@@ -293,16 +293,15 @@ def login_view(request):
             user = None
         
         if user is None:
-            # Buscar el usuario por nombre de usuario
             user = authenticate(request, username=username, password=password)
         else:
-            # Autenticar el usuario con el username encontrado
             user = authenticate(request, username=user.username, password=password)
 
         if user is not None:
-            if user.is_active:  # Verifica si el usuario está activo
+            if user.is_active:
                 auth_login(request, user)
-                return redirect(reverse('app_tickets:view_panel_principal'))  # Redirige al panel principal
+                next_url = request.POST.get('next') or request.GET.get('next') or reverse('app_tickets:view_panel_principal')
+                return redirect(next_url)
             else:
                 return render(request, 'asica_login.html', {'error': 'Tu cuenta está inactiva. Contacta al administrador.'})
         else:
@@ -364,7 +363,7 @@ def view_formulario_activacion_cuenta(request, token):
 # De modo que este ya no sea valido, el estado de el usuario pasa a ser marcado como activo para que este pueda iniciar sesión con normalidad. 
 def funcion_submit_formulario_activacion_cuenta_ajax(request, token):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.POST.get('email').lower()
         password_temporal = request.POST.get('password_temporal')
         password_nueva = request.POST.get('password_nueva')
         password_confirmacion = request.POST.get('password_confirmacion')
@@ -403,10 +402,12 @@ def funcion_submit_formulario_activacion_cuenta_ajax(request, token):
 
 
         # Marca el token como usado
-        invitacion.token_usado = True
-        invitacion.save()
+
 
         try:
+
+            invitacion.token_usado = True
+            invitacion.save()
             # Obtén al usuario con el correo proporcionado
             user = User.objects.get(email=email)
             # Establece la nueva contraseña
@@ -430,7 +431,7 @@ def funcion_submit_formulario_activacion_cuenta_ajax(request, token):
 # en caso de contraseñas olvidadas.
 def view_forgot_password_ajax(request):
     if request.method == 'POST':
-        email = request.POST.get('forgot_password_email')
+        email = request.POST.get('forgot_password_email').lower()
         
         # Verificar si el email existe y si el usuario está activo
         try:
@@ -504,7 +505,7 @@ def view_formulario_forgot_password(request, token):
 # realiza el cambio de contraseña.
 def funcion_submit_formulario_forgot_password_ajax(request, token):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.POST.get('email').lower()
         password_nueva = request.POST.get('password_nueva')
         password_confirmacion = request.POST.get('password_confirmacion')
 
@@ -535,11 +536,14 @@ def funcion_submit_formulario_forgot_password_ajax(request, token):
 
 
 
-        # Marca el token como usado
-        solicitud_forgot_password.token_usado = True
-        solicitud_forgot_password.save()
+
 
         try:
+
+            # Marca el token como usado
+            solicitud_forgot_password.token_usado = True
+            solicitud_forgot_password.save()
+
             # Obtén al usuario con el correo proporcionado
             user = User.objects.get(email=email)
             # Establece la nueva contraseña
@@ -589,7 +593,7 @@ def funcion_cambiar_password_usuario_ajax(request):
         # Mantener la sesión activa si no se seleccionó "cerrar sesión"
         if cerrar_sesion:
             logout(request)
-            return JsonResponse({'success': True, 'message': 'Cambio de contraseña exitoso. Sesión cerrada.', 'redirect': '/auth/login/'})
+            return JsonResponse({'success': True, 'message': 'Cambio de contraseña exitoso. Sesión cerrada.', 'redirect': '/'})
         else:
             update_session_auth_hash(request, user)  # Mantener al usuario autenticado
             return JsonResponse({'success': True, 'message': 'Cambio de contraseña exitoso.'})

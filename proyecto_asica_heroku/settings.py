@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app_tickets.track_sesiones.ActiveUserMiddleware',
 ]
 
 ROOT_URLCONF = 'proyecto_asica_heroku.urls'
@@ -124,6 +125,10 @@ STATIC_URL = "static/"
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR,'global_static'),
+)
+
 
 django_heroku.settings(locals())
 
@@ -156,3 +161,4 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
 
+LOGIN_URL = '/'  

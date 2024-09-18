@@ -55,7 +55,7 @@
     padding-right: 20px;
 "></i>
     <div class="d-flex align-items-center justify-content-between">
-      <a href="" class="logo d-flex align-items-center">
+      <a href="{% url 'app_tickets:view_panel_principal' %}" class="logo d-flex align-items-center">
         <img src="{% static 'assets/img/fabicon.png' %}" alt="">
         <span class="d-none d-lg-block">HELP DESK</span>
       </a>
@@ -72,9 +72,9 @@
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
-            
-            <span class="badge bg-primary badge-number"></span>
-       
+            {% if notificaciones_conteo %}
+            <span class="badge bg-primary badge-number">{{ notificaciones_conteo }}</span>
+            {% endif %}
           </a><!-- End Notification Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications"  style="
@@ -82,11 +82,11 @@
           height: 800px;
           scrollbar-width: thin;">
             <li class="dropdown-header" id="dropdown-header-notifications" style="padding-right: 55px; padding-left: 55px;"> 
-           
+              Tienes {{ notificaciones_conteo }} notificaciones.
               <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2"></span></a>
             </li>
 
-        
+            {% for item in notificaciones_lista %}
             <li>
               <hr class="dropdown-divider">
             </li>
@@ -94,11 +94,11 @@
             
             <a href="#" class="notification-link" style="text-decoration: none; color:inherit;">
               <li class="notification-item">
-                <i class=""></i> <!-- Aquí se muestra el ícono dinámico -->
+                <i class="{{ item.icono }}"></i> <!-- Aquí se muestra el ícono dinámico -->
                 <div>
-                  <h6></h6>
-                  <p></p>
-                  <p></p>
+                  <h6>{{item.notificacion.titulo}}</h6>
+                  <p>{{item.notificacion.mensaje}}</p>
+                  <p>Fecha: {{item.notificacion.fecha_creacion|date:"d/m/Y - h:i A" }}</p>
                 </div>
               </li>
             </a>
@@ -107,6 +107,7 @@
               <hr class="dropdown-divider">
             </li>
 
+            {% endfor  %}
 
             
 
@@ -127,20 +128,20 @@
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
             <img src="{% static 'assets/img/profile.png' %}" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2"></span>
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ request.user.first_name|slice:":1" }}. {{ request.user.last_name }}</span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6></h6>
-              <span></span>
+              <h6>{{ request.user.first_name }} {{ request.user.last_name }}</h6>
+              <span>{{ perfil_usuario.nombre_puesto }}</span>
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="">
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'app_autenticacion:view_perfil_usuario' %}">
                 <i class="bi bi-person"></i>
                 <span>Mi Perfil</span>
               </a>
@@ -152,7 +153,7 @@
    
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="">
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'app_autenticacion:logout_view' %}">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sign Out</span>
               </a>
@@ -172,7 +173,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="">
+        <a class="nav-link " href="{% url 'app_tickets:view_panel_principal' %}">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
@@ -185,13 +186,13 @@
         </a>
       </li><!-- End Components Nav -->
 
+
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'app_autenticacion:view_tabla_usuarios' %}">
           <i class="bi bi-people"></i>
           <span>Usuarios</span>
         </a>
       </li><!-- End Components Nav -->
-
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'app_contactos:view_tabla_contactos' %}">
@@ -207,12 +208,12 @@
 
       
       <li class="nav-item">
-        <a class="nav-link collapsed" href="">
+        <a class="nav-link collapsed" href="{% url 'app_contactos:view_formulario_contacto' %}">
           <i class="bi bi-menu-button-wide"></i>
           <span>Formulario de prueba</span>
         </a>
       </li><!-- End Components Nav -->
-
+    
 
 
     </ul>
