@@ -22,4 +22,14 @@ urlpatterns = [
     
 
 
+
+    # Funcion ajax usada para procesar tanto notas privadas/comentarios en un ticket como respuestas a clientes. 
+    path('agregar_nota/<int:id>/', view_agregar_nota_ajax, name='view_agregar_nota_ajax'),
+
+    # URL para la view que se encarga de procesar y guardar cada respuesta (enviadas por correo electronico) por parte de el cliente. 
+    path('receive_email/', receive_email, name='receive_email'),
+
+
+
+
 ]

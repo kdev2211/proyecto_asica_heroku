@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-
+from django.contrib.auth import get_user_model
 
 #TABLA PERFIL DE USUARIO (Guarda informacion adicional del usuario extendiendo el modelo Django Auth para usuarios)
 class Perfil_Usuario(models.Model):
@@ -26,6 +26,7 @@ class Invitacion_Usuario(models.Model):
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     token_expira_en = models.DateTimeField(default=timezone.now() + timedelta(hours=24))
     token_usado = models.BooleanField(default=False)
+    usuario = models.CharField(max_length=10, null=True, blank=True) 
 
     def actualizar_token(self):
         self.token = uuid.uuid4()

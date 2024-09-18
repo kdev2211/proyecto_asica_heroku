@@ -85,6 +85,9 @@ def view_agregar_usuario_ajax(request):
 
                 # Reenviar invitación
                 if invitacion:
+
+
+
                     invitacion.actualizar_token()
                     contrasena_temporal = invitacion.contrasena_temporal
                     token = invitacion.token
@@ -131,7 +134,8 @@ def view_agregar_usuario_ajax(request):
                 Invitacion_Usuario.objects.create(
                     email=email,
                     contrasena_temporal=contrasena_temporal,
-                    token=token
+                    token=token,
+                    usuario=usuario.username
                 )
                 link_activacion = request.build_absolute_uri(reverse('app_autenticacion:view_formulario_activacion_cuenta', args=[token]))
                 mensaje = (f"Hola {nombre},\n\nHas sido invitado a unirte. Usa tu correo y la siguiente contraseña temporal: "
@@ -229,12 +233,12 @@ def funcion_reenviar_invitacion_ajax(request):
             user_id = data.get('id')
             
             # Verificar si el email ya está registrado
-            user_email = User.objects.filter(id=user_id).first()
-            if not user_email:
+            usuario = User.objects.filter(id=user_id).first()
+            if not usuario:
                 return JsonResponse({'success': False, 'error': 'Usuario no encontrado.'})
 
-            invitacion = Invitacion_Usuario.objects.filter(email=user_email.email).first()
-            if user_email.last_login:
+            invitacion = Invitacion_Usuario.objects.filter(usuario=usuario.username).first()
+            if usuario.last_login:
                 return JsonResponse({
                     'success': True,
                     'message': 'El usuario ya tiene una cuenta activa. No es necesario reenviar la invitación.',
@@ -242,12 +246,18 @@ def funcion_reenviar_invitacion_ajax(request):
                 })
 
             if invitacion:
+
+
+                invitacion.email = usuario.email
+                invitacion.creado_en = timezone.now()  # O establece la fecha que desees
+                invitacion.save()                
+
                 invitacion.actualizar_token()
                 contrasena_temporal = invitacion.contrasena_temporal
                 token = invitacion.token
                 link_activacion = request.build_absolute_uri(reverse('app_autenticacion:view_formulario_activacion_cuenta', args=[token]))
 
-                mensaje = (f"Hola {user_email.first_name},\n\nHas sido invitado a unirte. "
+                mensaje = (f"Hola {usuario.first_name},\n\nHas sido invitado a unirte. "
                            f"Usa tu correo y la siguiente contraseña temporal: {contrasena_temporal}\n"
                            f"Accede al sistema usando este enlace: {link_activacion}.\n"
                            "Una vez que actives tu cuenta, se te redirigirá para iniciar sesión con tu nueva contraseña.")
@@ -257,7 +267,7 @@ def funcion_reenviar_invitacion_ajax(request):
                     subject='Reenvío de Invitación a unirse',
                     body=mensaje,
                     from_email=email_from,
-                    to=[user_email.email],
+                    to=[usuario.email],
                 )
                 email_message.send()
 

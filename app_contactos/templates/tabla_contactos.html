@@ -1,16 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Tickets{% endblock title %}
+{% block title %}Contactos{% endblock title %}
 {% load static %}
 {% block contenido %}
 
 <div class="pagetitle"> <!-- INICIO: TITULO DE PAGINA | MIS TICKETS -->         
-    <h1>Mis tickets</h1>
+    <h1>Contactos
+    </h1>
 
     <!-- ELEMENTOS DE NAVEGACION ENTRE PAGINAS -->     
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="">Mi Dashboard</a></li>
-        <li class="breadcrumb-item">Mis tickets</li>
+        <li class="breadcrumb-item"><a href="{% url 'app_tickets:view_panel_principal' %}">Mi Dashboard</a></li>
+        <li class="breadcrumb-item">Contactos
+        </li>
       </ol>
     </nav>
   </div><!-- FINAL DE EL TITULO DE PAGINA -->

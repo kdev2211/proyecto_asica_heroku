@@ -445,3 +445,212 @@ def view_cargar_usuarios_ajax(request, id):
     ]
     
     return JsonResponse({'usuarios': usuarios_lista})
+
+
+
+# Función para procesar respuestas
+def procesar_respuesta_ticket(ticket_id, descripcion_notas, autor_datos):
+    # Verificar si ya existe una nota de respuesta
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    nota_respuesta_existente = ticket.notas_set.filter(tipo_nota_id=3).exists()
+
+    # Obtener el correo del contacto
+    contacto = ticket.contacto
+    recipient = contacto.email_contacto
+
+    if not recipient:
+        recipient = 'no-reply@grupoasicaficticio.com'  # Proveer un valor por defecto o manejar el error
+
+    # Crear una recapitulación si es la primera respuesta
+    if not nota_respuesta_existente:
+        primer_nota_cliente = ticket.notas_set.filter(tipo_nota_id=1).order_by('fecha_nota').first()
+        recapitulacion = f"\n\nEn respuesta a la siguiente consulta:\n{primer_nota_cliente.descripcion_notas}"
+        message = descripcion_notas + recapitulacion
+    else:
+        message = descripcion_notas
+
+    # Guardar la nota de respuesta en la base de datos
+    nota = Notas.objects.create(
+        descripcion_notas=descripcion_notas,
+        ticket_id=ticket_id,
+        tipo_nota_id=3,
+        autor=autor_datos
+    )
+
+    # Enviar el correo de respuesta
+    num_ticket = ticket.numero_ticket
+    subject = f"Grupo ASICA | En respuesta a su consulta (Número de ticket: {num_ticket})"
+    email_from = settings.EMAIL_HOST_USER
+    headers = {
+        'Message-ID': f'<ticket-{num_ticket}@grupoasicaficticio.com>',
+        'In-Reply-To': f'<ticket-{num_ticket}@grupoasicaficticio.com>',
+        'References': f'<ticket-{num_ticket}@grupoasicaficticio.com>',
+    }
+
+    email = EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=email_from,
+        to=[recipient],
+        headers=headers
+    )
+    email.send()
+
+    # Retornar el objeto nota para el JsonResponse
+    return nota
+
+
+# View para procesar la información incluida en las notas
+@login_required
+def view_agregar_nota_ajax(request, id):
+    if request.method == 'POST':
+        accion = request.POST.get("accion")
+        user = request.user  # Usuario logueado
+        grupos = user.groups.all()  # Obtener todos los grupos del usuario
+        user_perfil = get_object_or_404(Perfil_Usuario.objects.select_related('departamento'), user=user)
+
+
+        autor_datos = f"{user.first_name} {user.last_name} (Usuario: {user.username} | {user_perfil.nombre_puesto})"
+        
+        # Obtener la instancia del Ticket y el contacto relacionado
+        ticket = get_object_or_404(Ticket, id=id)
+        contacto = ticket.contacto
+        descripcion_notas = request.POST.get("descripcion_notas")
+
+        # Verificar si hay un usuario asignado
+        usuario_id = request.POST.get('select_usuario', None)
+        if usuario_id:
+            try:
+                usuario_id = int(usuario_id)
+            except ValueError:
+                usuario_id = None
+        else:
+            usuario_id = None
+        ticket.usuario_id = usuario_id
+
+        # Actualizar la instancia de Contacto con los nuevos datos
+        if contacto:
+            contacto.nombre_contacto = request.POST.get("nombre_contacto", contacto.nombre_contacto)
+            contacto.apellido_contacto = request.POST.get("apellido_contacto", contacto.apellido_contacto)
+            contacto.email_contacto = request.POST.get("email_contacto", contacto.email_contacto)
+            contacto.telefono_contacto = request.POST.get("telefono_contacto", contacto.telefono_contacto)
+            contacto.save()
+        
+        # Actualizar los detalles del ticket según el grupo del usuario
+        if grupos.filter(name='Supervisor').exists():
+            ticket.producto_id = request.POST.get("select_producto", ticket.producto_id)
+            ticket.categoria_id = request.POST.get("categoria_select", ticket.categoria_id)
+            ticket.status_id = request.POST.get("status_select", ticket.status_id)
+            ticket.prioridad_id = request.POST.get("prioridad_select", ticket.prioridad_id)
+            ticket.departamento_id = request.POST.get("select_departamento", ticket.departamento_id)
+        else:
+            ticket.producto_id = request.POST.get("select_producto", ticket.producto_id)
+            ticket.categoria_id = request.POST.get("categoria_select", ticket.categoria_id)
+            ticket.status_id = request.POST.get("status_select", ticket.status_id)
+
+
+        # Guardar los cambios (esto disparará las señales)
+        ticket.save()
+
+        # Manejar la acción de "enviar" o "guardar"
+        if accion == "enviar":
+            nota = procesar_respuesta_ticket(id, descripcion_notas, autor_datos)
+
+            return JsonResponse({
+                'id': nota.id,
+                'fecha_nota': timezone.localtime(nota.fecha_nota).strftime('%d/%m/%Y - %I:%M:%S %p'),
+                'descripcion_notas': nota.descripcion_notas,
+                'autor': autor_datos
+            })
+
+        elif accion == "guardar":
+            if descripcion_notas:
+                nota = Notas.objects.create(
+                    descripcion_notas=descripcion_notas,
+                    ticket_id=id,
+                    tipo_nota_id=2,
+                    autor=autor_datos
+                )
+
+                return JsonResponse({
+                    'id': nota.id,
+                    'fecha_nota': timezone.localtime(nota.fecha_nota).strftime('%d/%m/%Y - %I:%M:%S %p'),
+                    'descripcion_notas': nota.descripcion_notas,
+                    'autor': autor_datos
+                })
+
+            else:
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Información almacenada correctamente, pero no se creó ninguna nueva nota.'
+                })
+
+    return render(request, 'formulario_ticket.html', {'error': 'Formulario no enviado correctamente. Intente nuevamente.'})
+
+# VIEW PARA PROCESAR EMAILS RECOPILADOS POR EL SCRIPT FETCH_EMAILS.PY
+@csrf_exempt
+def receive_email(request):
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            message_id = data.get('message_id')
+            
+            # Verificar si el correo ya existe en la base de datos
+            if Email.objects.filter(message_id=message_id).exists():
+                return JsonResponse({'status': 'exists'}, status=200)
+            
+            # Continuar con el procesamiento normal del correo...
+            sender = data.get('sender', 'unknown@domain.com')
+            recipient = data.get('recipient', 'unknown@domain.com')
+            subject = data.get('subject', 'No Subject')
+            body = data.get('body', 'No Body')
+
+            # Log detallado para depuración
+            print(f"Procesando correo - Sender: {sender}, Recipient: {recipient}, Subject: {subject}, Message ID: {message_id}")
+
+            # Buscar el número de ticket en el asunto del correo
+            match = re.search(r'\b(\d{6}-\d{6})\b', subject)
+            ticket = None
+            if match:
+                num_ticket = match.group(1)
+                ticket = Ticket.objects.filter(numero_ticket=num_ticket).first()
+
+            # Crear u obtener el contacto
+            nombre_contacto = sender.split()[0]
+            apellido_contacto = ' '.join(sender.split()[1:])
+            email_contacto = sender.split()[-1].strip("<>")
+
+            contacto, created = Contacto.objects.get_or_create(
+                email_contacto=email_contacto,
+                defaults={'nombre_contacto': nombre_contacto, 'apellido_contacto': apellido_contacto}
+            )
+
+            # Si no se encontró un ticket existente, crear uno nuevo
+            if not ticket:
+                ticket = Ticket.objects.create(
+                    contacto=contacto,
+                    producto=None,
+                    categoria=None,
+                    status_id=1,  # Asumimos que hay un status inicial por defecto
+                    numero_ticket=num_ticket  # Usar el número de ticket existente o nuevo
+                )
+
+            # Crear la nota asociada al ticket existente o nuevo
+            Notas.objects.create(
+                ticket=ticket,
+                descripcion_notas=body,
+                tipo_nota_id=1,  # 1 = "email"
+                autor  = f"{contacto.nombre_contacto} {contacto.apellido_contacto}"
+            )
+
+            # Guardar el email en la base de datos
+            Email.objects.create(sender=sender, recipient=recipient, subject=subject, body=body, message_id=message_id)
+
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            print(f"Error: {e}")  # Log para depuración
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
