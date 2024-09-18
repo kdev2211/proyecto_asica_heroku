@@ -42,8 +42,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_autenticacion',
     'app_contactos',
-    'app_tickets'
+    'app_tickets',
+    'channels'
 ]
+
+
+# Configura el ASGI application
+ASGI_APPLICATION = 'proyecto_asica_heroku.asgi.application'
+
+# Define el canal en memoria para el layer
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Usa el backend en memoria
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
