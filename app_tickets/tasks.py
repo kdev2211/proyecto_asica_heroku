@@ -1,5 +1,5 @@
 from celery import shared_task
-from fetch_emails import connect_to_mail, process_incoming_emails
+from proyecto_asica_heroku.fetch_emails import connect_to_mail, process_incoming_emails
 
 @shared_task
 def process_emails_task():
