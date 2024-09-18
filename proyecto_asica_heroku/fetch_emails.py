@@ -46,7 +46,7 @@ def fetch_emails(mail, messages):
                 mail.set_flags([msg_id], [b'\\Seen'])  # Marcar como leído
 
 def is_email_processed(message_id):
-    url = 'https://tu-app.herokuapp.com/helpdesk/receive_email/'
+    url = 'https://proyecto-asica-heroku-a66def4945e7.herokuapp.com/helpdesk/receive_email/'
     data = {
         'message_id': message_id
     }
@@ -101,7 +101,7 @@ def filter_email_body(body):
     return '\n'.join(filtered_lines).strip()
 
 def send_email_to_django(sender, recipient, subject, body, message_id):
-    url = 'https://tu-app.herokuapp.com/helpdesk/receive_email/'
+    url = 'https://proyecto-asica-heroku-a66def4945e7.herokuapp.com/helpdesk/receive_email/'
     data = {
         'sender': sender or 'unknown@domain.com',
         'recipient': recipient or 'unknown@domain.com',
