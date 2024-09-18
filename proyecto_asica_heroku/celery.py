@@ -3,9 +3,9 @@ import os
 from celery import Celery
 
 # Establecer el módulo de configuración predeterminado de Django para Celery
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proyecto-asica-heroku.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proyecto_asica_heroku.settings')
 
-app = Celery('proyecto-asica-heroku')
+app = Celery('proyecto_asica-heroku')
 
 # Cargar la configuración de Celery desde el archivo settings.py
 app.config_from_object('django.conf:settings', namespace='CELERY')
