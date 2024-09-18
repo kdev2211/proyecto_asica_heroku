@@ -249,13 +249,14 @@
       <script src="{% static 'assets/js/main.js' %}"></script>
 
 
-      
+
       <script>
-        function cargarNotificacionesWebSocket() {
+          function cargarNotificacionesWebSocket() {
             const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-            const wsUrl = `${wsProtocol}${window.location.host}/ws/notificaciones/`;
-            let notificacionesSocket = new WebSocket(wsUrl);
-        
+                      const wsUrl = `${wsProtocol}${window.location.host}/ws/notificaciones/`;
+                      let notificacionesSocket = new WebSocket(wsUrl);
+
+
             notificacionesSocket.onclose = function(event) {
                 console.error("WebSocket cerrado inesperadamente. Intentando reconectar en 5 segundos...", event);
                 setTimeout(cargarNotificacionesWebSocket, 5000);
