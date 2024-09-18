@@ -53,7 +53,10 @@ ASGI_APPLICATION = 'proyecto_asica_heroku.asgi.application'
 # Define el canal en memoria para el layer
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Usa el backend en memoria
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL')],
+        },
     },
 }
 
