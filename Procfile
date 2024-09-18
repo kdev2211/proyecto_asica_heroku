@@ -1,1 +1,1 @@
-web: gunicorn proyecto_asica_heroku.wsgi --log-file -
+web: daphne -b 0.0.0.0 -p $PORT proyecto_asica_heroku.asgi:application
