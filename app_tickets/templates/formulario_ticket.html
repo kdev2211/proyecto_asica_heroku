@@ -145,7 +145,7 @@
             <div class="col-xxl-12 col-md-6">
                <div class="card">
                 <div class="filter">  <!-- SELECTOR DE FILTROS -->
-                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                       <li class="dropdown-header text-start">
                         <h6>Filtrar</h6>
@@ -398,7 +398,7 @@
         actualizarBoton.addEventListener("click", function() {
 
             document.getElementById('spinner-div').style.display = 'flex';
-            location.reload(); // Esto refresca la página
+            location.reload(false); // Recargar sin usar caché
         });
     });
 </script>

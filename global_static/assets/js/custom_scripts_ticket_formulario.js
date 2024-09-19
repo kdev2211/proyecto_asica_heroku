@@ -80,11 +80,13 @@
             })
             .catch(error => console.log('Error:', error))
             .finally(() => {
-                // Aquí no ocultamos el spinner
+        
             });
         
-            // Recargar la página inmediatamente
-            location.reload(); // Esto reiniciará la página y mantendrá el spinner visible
+        
+            setTimeout(function() {
+                document.location.reload();
+            }, 1000);
         }
   
       // VALIDACIÓN Y ENVÍO DEL FORMULARIO

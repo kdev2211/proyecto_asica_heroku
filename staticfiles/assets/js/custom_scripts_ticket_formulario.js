@@ -84,7 +84,7 @@
             });
         
             // Recargar la página inmediatamente
-            location.reload(); // Esto reiniciará la página y mantendrá el spinner visible
+            document.location.reload();// Recargar sin usar caché
         }
   
   
