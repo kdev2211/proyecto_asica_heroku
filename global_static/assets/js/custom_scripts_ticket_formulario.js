@@ -72,16 +72,20 @@
                       </div>
                   `;
                   document.querySelector('.card_custom').prepend(nuevaNota);
+                  
                   document.getElementById('descripcion_notas').value = '';  // Limpiar el textarea
-              } else {
-                  console.log('La información fue almacenada correctamente, pero no se recibió ninguna nueva nota.');
-              }
-          })
-          .catch(error => console.log('Error:', error))
-          .finally(() => {
-              document.getElementById('spinner-div').style.display = 'none';
-          });
-      }
+                } else {
+                    console.log('La información fue almacenada correctamente, pero no se recibió ninguna nueva nota.');
+                }
+            })
+            .catch(error => console.log('Error:', error))
+            .finally(() => {
+                // Aquí no ocultamos el spinner
+            });
+        
+            // Recargar la página inmediatamente
+            location.reload(); // Esto reiniciará la página y mantendrá el spinner visible
+        }
   
       // VALIDACIÓN Y ENVÍO DEL FORMULARIO
       function validateAndSubmitForm(event) {

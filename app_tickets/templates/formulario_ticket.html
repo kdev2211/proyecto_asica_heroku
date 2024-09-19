@@ -46,6 +46,13 @@
              ENVIAR RESPUESTA
              <i class="ri ri-send-plane-fill ms-2" style="font-size: 1.25rem;"></i>
           </button>
+
+          <!-- Botón Refrescar -->
+          <button type="button" class="btn btn-outline-primary"id="actualizar_boton">
+            ACTUALIZAR PAGINA
+            <i class="ri ri-refresh-line ms-2" style="font-size: 1.25rem;"></i>
+         </button>
+          
        </div>
     </div>
  </div>
@@ -383,7 +390,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
 
+        
+        const actualizarBoton = document.getElementById("actualizar_boton");
+        actualizarBoton.addEventListener("click", function() {
+
+            document.getElementById('spinner-div').style.display = 'flex';
+            location.reload(); // Esto refresca la página
+        });
+    });
+</script>
 
 {% endblock %}
 

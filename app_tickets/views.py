@@ -81,25 +81,15 @@ def view_panel_principal(request):
 
         
 # Obtener los usuarios activos que pertenecen al mismo departamento
-        usuarios_activos_departamento = User.objects.filter(
+        total_usuarios_status_activo_departamento = User.objects.filter(
             perfil_usuario__departamento=user_departamento,
-            is_active=True)
+            is_active=True).count()
 
-   
-# Filtrar las sesiones activas de esos usuarios
-        sesiones_activas_departamento = Session.objects.filter(
-            expire_date__gte=timezone.now(),  # sesiones que no han expirado
-            session_key__in=[
-                session.session_key for session in Session.objects.all()
-                if session.get_decoded().get('_auth_user_id') and
-                int(session.get_decoded().get('_auth_user_id')) in usuarios_activos_departamento.values_list('id', flat=True)
-                ])
 
-# Contar el número de usuarios con status "activo", esto con el fin de contar usuarios que podrian haber renunciado o dejado la empresa temporalmente.
-        total_usuarios_activos_departamento = usuarios_activos_departamento.count()
+#Numero de sesiones activas
+        sesiones_activas_conteo = ActiveUserMiddleware.get_active_user_count(department=user_departamento, timeout_minutes=5)
 
-# Contar cuántas sesiones activas están asociadas a usuarios logueados en el departamento
-        sesiones_activas = sesiones_activas_departamento.count()
+
 
 
 #Obtiene exactamente la informacion de usuarios conectados mediante una modificacion de middleware
@@ -122,7 +112,7 @@ def view_panel_principal(request):
         # PORCENTAJES PARA KPIs DE TARJETAS
         
         porcentaje_tickets_pendientes = (tickets_pendientes / total_tickets) * 100 if total_tickets > 0 else 0
-        porcentaje_sesiones_activas = (sesiones_activas / total_usuarios_activos_departamento) * 100 if total_usuarios_activos_departamento > 0 else 0
+        porcentaje_sesiones_activas = (sesiones_activas_conteo / total_usuarios_status_activo_departamento) * 100 if total_usuarios_status_activo_departamento > 0 else 0
         porcentaje_tickets_sin_asignar = (tickets_sin_asignar / total_tickets) * 100 if total_tickets > 0 else 0
 
 
@@ -131,7 +121,7 @@ def view_panel_principal(request):
         context = {
             'total_usuarios_conectados':users_with_status, #INFORMACION DE LOS USUARIOS CON SESION ACTIVA
             'tickets_pendientes': tickets_pendientes, 
-            'sesiones_activas': sesiones_activas,  #SESIONES ACTIVAS
+            'sesiones_activas': sesiones_activas_conteo,  #SESIONES ACTIVAS
             'tickets_sin_asignar': tickets_sin_asignar,
 
             'porcentaje_sesiones_activas': porcentaje_sesiones_activas,

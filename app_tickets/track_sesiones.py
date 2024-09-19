@@ -32,3 +32,21 @@ class ActiveUserMiddleware:
             })
 
         return users_with_status
+    
+
+    @staticmethod
+    def get_active_user_count(department=None, timeout_minutes=5):
+        User = get_user_model()
+        active_user_count = 0
+
+        users = User.objects.filter(is_active=True)
+        if department:
+            users = users.filter(perfil_usuario__departamento=department)  # Filtro por departamento
+
+        for user in users:
+            last_seen = cache.get(f'last_seen_{user.username}')
+            is_active = last_seen and now() - last_seen < timedelta(minutes=timeout_minutes)
+            if is_active:
+                active_user_count += 1
+
+        return active_user_count
