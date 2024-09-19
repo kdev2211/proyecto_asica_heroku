@@ -193,7 +193,7 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_BEAT_SCHEDULE = {
     'process-emails-every-20-seconds': {
         'task': 'app_tickets.tasks.process_emails_task',
-        'schedule': 20.0,  # Cada 20 segundos
+        'schedule': 40.0,  # Cada 40 segundos
     },
 }
 
