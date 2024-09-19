@@ -13,8 +13,15 @@ urlpatterns = [
     # URL para mostrar la informacion de cada ticket.
     path('ticket_tabla/', view_tabla_ticket, name='view_tabla_ticket'),
 
+    path('ticket_tabla_usuario/', view_tabla_ticket_creado_por_usuario, name='view_tabla_ticket_creado_por_usuario'),
+
+
+
     # URL que muestra los detalles de un unico ticket junto a un formulario usado para editar la informacion en este.
     path('ticket_tabla/ticket/<int:id>/', view_formulario_ticket, name='view_formulario_ticket'), 
+
+
+
     path('crear_ticket_usuario_ajax/', crear_ticket_usuario_ajax, name='crear_ticket_usuario_ajax'),
 
 

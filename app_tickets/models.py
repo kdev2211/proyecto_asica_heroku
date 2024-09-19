@@ -79,6 +79,7 @@ class Ticket(models.Model):
     numero_ticket = models.CharField(max_length=13, unique=True, default=generate_ticket_number)
     fecha_creacion = models.DateTimeField(default=timezone.now, blank=True)
     origen_ticket = models.ForeignKey('Origen_Ticket', on_delete=models.PROTECT, null=True)
+    creado_por = models.CharField(max_length=10, null=True, blank=True)  
 
     def save(self, *args, **kwargs):
         if not self.numero_ticket:

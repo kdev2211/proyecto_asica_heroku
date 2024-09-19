@@ -93,6 +93,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app_autenticacion.context_processors_autenticacion.group_context',
                 'app_autenticacion.context_processors_autenticacion.perfil_usuario',
                 'app_tickets.context_processors_tickets.notificaciones_usuario',
             ],
@@ -150,6 +151,9 @@ STATIC_URL = "static/"
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR,'global_static'),
+)
 
 
 django_heroku.settings(locals())

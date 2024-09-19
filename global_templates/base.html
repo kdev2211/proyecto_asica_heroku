@@ -179,13 +179,34 @@
         </a>
       </li><!-- End Dashboard Nav -->
 
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'app_tickets:view_tabla_ticket' %}">
+
+
+
+      <li class="nav-item"></li>
+        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse">
           <i class="bi bi-journal-text"></i>
           <span>Tickets</span>
+          <i class="bi bi-chevron-down ms-auto"></i>
         </a>
-      </li><!-- End Components Nav -->
+        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a  href="{% url 'app_tickets:view_tabla_ticket' %}">
+              <i class="bi bi-circle"></i><span>{% if es_supervisor %} Mis tickets {% else %} Tareas {% endif %}</span>
+            </a>
+          </li>
+          <li>
+            <a  href="{% url 'app_tickets:view_tabla_ticket_creado_por_usuario' %}">
 
+              
+      
+              <i class="bi bi-circle"></i><span>Tickets creados por mi</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Tables Nav -->
+
+
+      {% if es_supervisor %}
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'app_autenticacion:view_tabla_usuarios' %}">
@@ -200,19 +221,19 @@
           <span>Contactos</span>
         </a>
       </li><!-- End Components Nav -->
-
+      {% endif %}
 
  
 
     
 
-      
+    <!--  
       <li class="nav-item">
         <a class="nav-link collapsed" href="{% url 'app_contactos:view_formulario_contacto' %}">
           <i class="bi bi-menu-button-wide"></i>
           <span>Formulario de prueba</span>
         </a>
-      </li><!-- End Components Nav -->
+      </li> -->  <!-- End Components Nav -->
     
 
 

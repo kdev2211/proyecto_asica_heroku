@@ -220,7 +220,9 @@ def view_tabla_ticket(request):
     
     # Personalizar el contenido basado en el grupo del usuario
     if user.groups.filter(name='Supervisor').exists():
-        lista_ticket = Ticket.objects.prefetch_related('categoria', 'contacto', 'status', 'usuario', 'departamento').filter(departamento_id=user_departamento)
+        lista_ticket = Ticket.objects.prefetch_related('categoria', 'contacto', 'status', 'usuario', 'departamento') \
+        .filter(departamento_id=user_departamento) \
+        .order_by('-fecha_creacion')
 
  
 
@@ -236,7 +238,9 @@ def view_tabla_ticket(request):
 
                 }
     else:
-        lista_ticket = Ticket.objects.prefetch_related('categoria', 'contacto', 'status').filter(usuario_id=user)
+        lista_ticket = Ticket.objects.prefetch_related('categoria', 'contacto', 'status') \
+        .filter(usuario_id=user) \
+        .order_by('-fecha_creacion')
 
 
         perfiles_activos = Perfil_Usuario.objects.filter(
@@ -256,6 +260,69 @@ def view_tabla_ticket(request):
                 'perfiles_activos':perfiles_activos}
      
     return render(request, 'tabla_ticket.html', data)
+
+
+
+@never_cache
+def view_tabla_ticket_creado_por_usuario(request):   
+   # Obtener el usuario actual
+    user = request.user
+    user_perfil = get_object_or_404(Perfil_Usuario.objects.select_related('departamento'), user=user)
+    user_departamento = user_perfil.departamento
+
+    producto_lista = Producto.objects.all()
+    
+    status_lista = Status.objects.all()
+    prioridad_lista = Prioridad.objects.all()
+    departamentos_lista = Departamento.objects.all()
+
+
+
+    
+    
+    # Personalizar el contenido basado en el grupo del usuario
+    if user.groups.filter(name='Supervisor').exists():
+        lista_ticket = Ticket.objects.prefetch_related('categoria', 'contacto', 'status', 'usuario', 'departamento') \
+        .filter(departamento_id=user_departamento, creado_por=user.username) \
+        .order_by('-fecha_creacion')
+
+ 
+
+        categoria_lista = Categoria.objects.all()
+        # Lógica para los usuarios en el grupo "Grupo_Admin"
+        data = {'tickets':lista_ticket, 
+                'user_group': 'Supervisor',
+                'lista_productos':producto_lista,
+                'lista_categoria':categoria_lista,
+                'status_lista':status_lista,
+                'prioridad_lista':prioridad_lista,
+                'departamentos_lista':departamentos_lista,
+
+                }
+    else:
+        lista_ticket = Ticket.objects.prefetch_related('categoria', 'contacto', 'status') \
+        .filter(usuario_id=user, creado_por=user.username) \
+        .order_by('-fecha_creacion')
+
+
+        perfiles_activos = Perfil_Usuario.objects.filter(
+        user__is_active=True,
+        departamento_id=user_departamento
+    )
+        
+
+        categoria_lista = Categoria.objects.filter(id__in=[1, 2])
+        # Lógica para los usuarios en el grupo "Grupo_Soporte"
+        data = {'tickets': lista_ticket, 
+                'user_group': 'otro',
+                'lista_productos':producto_lista,
+                'lista_categoria':categoria_lista,
+                'status_lista':status_lista,
+                'prioridad_lista':prioridad_lista,
+                'perfiles_activos':perfiles_activos}
+     
+    return render(request, 'tabla_ticket_usuario.html', data)
+
 
 
 
@@ -346,7 +413,7 @@ def crear_ticket_usuario_ajax(request):
         producto_id = request.POST.get('select_producto')
         categoria_id = request.POST.get('select_categoria')
         status_id = request.POST.get('select_status')
-        prioridad_id = request.POST.get('select_prioridad')
+        
         form_descripcion_notas = request.POST.get('descripcion_incidente')
         nombre_empresa = "Grupo ASICA"
         
@@ -354,11 +421,12 @@ def crear_ticket_usuario_ajax(request):
             print ("SUPERVISOR")
             usuario_select_id = request.POST.get('select_usuario') 
             departamento_id = request.POST.get('select_departamento') 
-
+            prioridad_id = request.POST.get('select_prioridad')
             
         else:
             print ("PERSONAL")
             departamento_id = user_perfil.departamento_id
+            prioridad_id = 1
             usuario_select_id = request.POST.get('select_usuario_personal') 
 
 
@@ -400,7 +468,8 @@ def crear_ticket_usuario_ajax(request):
             origen_ticket_id = 3,
             departamento_id = departamento_id,
             prioridad_id = prioridad_id,
-            usuario_id = usuario_select_id
+            usuario_id = usuario_select_id,
+            creado_por = usuario.username
 
         )
 
