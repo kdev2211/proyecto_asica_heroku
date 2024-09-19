@@ -15,6 +15,10 @@ username = os.getenv("EMAIL_USERNAME")
 password = os.getenv("EMAIL_PASSWORD")
 imap_url = os.getenv("IMAP_URL")
 
+# Verificación de las variables de entorno
+if not all([username, password, imap_url]):
+    raise ValueError("Faltan variables de entorno necesarias.")
+
 def connect_to_mail():
     try:
         mail = IMAPClient(imap_url, ssl=True)
@@ -112,7 +116,6 @@ def send_email_to_django(sender, recipient, subject, body, message_id):
     headers = {'Content-Type': 'application/json'}
     response = requests.post(url, data=json.dumps(data), headers=headers)
     print(response.status_code, response.text)
-
 
 # Mantiene la conexión activa para detectar nuevos correos.
 def idle(mail):
