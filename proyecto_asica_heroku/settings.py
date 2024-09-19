@@ -185,7 +185,6 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 LOGIN_URL = '/'  
 
-
 # Configuración del broker y backend de resultados usando variables de entorno de Heroku
 CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
@@ -193,7 +192,7 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 # Intervalo para detectar si hay nuevas tareas
 CELERY_BEAT_SCHEDULE = {
     'process-emails-every-20-seconds': {
-        'task': 'nombre_de_tu_app.tasks.process_emails_task',
+        'task': 'app_tickets.tasks.process_emails_task',
         'schedule': 20.0,  # Cada 20 segundos
     },
 }
