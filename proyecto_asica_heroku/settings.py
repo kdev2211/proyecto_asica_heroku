@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-r3ewocb)xdtfwv0nnabt!b#qlc0w38tbf(jb2mdzw@jfg+)b2^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['proyecto-asica-heroku-a66def4945e7.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -151,9 +151,7 @@ STATIC_URL = "static/"
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR,'global_static'),
-)
+
 
 
 django_heroku.settings(locals())

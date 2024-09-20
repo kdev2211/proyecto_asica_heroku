@@ -80,13 +80,14 @@
             })
             .catch(error => console.log('Error:', error))
             .finally(() => {
-                // Aquí no ocultamos el spinner
+        
             });
         
-            // Recargar la página inmediatamente
-            document.location.reload();// Recargar sin usar caché
+        
+            setTimeout(function() {
+                document.location.reload();
+            }, 1000);
         }
-  
   
       // VALIDACIÓN Y ENVÍO DEL FORMULARIO
       function validateAndSubmitForm(event) {

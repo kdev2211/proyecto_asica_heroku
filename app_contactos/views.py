@@ -19,7 +19,7 @@ def view_enviar_consulta_ajax(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
-        email = request.POST.get('email')
+        email = request.POST.get('email').lower()
         telefono = request.POST.get('telefono')
         producto_id = request.POST.get('producto')
         categoria_id = request.POST.get('categoria_consulta')
