@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-r3ewocb)xdtfwv0nnabt!b#qlc0w38tbf(jb2mdzw@jfg+)b2^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['proyecto-asica-heroku-a66def4945e7.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -152,8 +152,6 @@ STATIC_URL = "static/"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-
-
 django_heroku.settings(locals())
 
 # Default primary key field type
@@ -162,6 +160,9 @@ django_heroku.settings(locals())
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR,'global_static'),
+)
 
 
 
@@ -200,3 +201,24 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CELERY_TIMEZONE = 'UTC'
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'django_errors.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
