@@ -101,17 +101,13 @@
    
 
 
-                <div class="row justify-content-between">
-                  <div class="col-1 d-flex justify-content-center align-items-center">
-                    
-                    {% if item.notificacion.visto == False %}
-                    <i class="bi bi-circle-fill" style="font-size: 0.3em; color: #0D6EFD;"></i>
-                    {% endif %}
-                  </div>
+                <div class="row">
 
 
                   <div class="col-auto ms-auto">
-                    <button type="button" class="btn-close"  aria-label="Close" ></button>
+                    {% if item.notificacion.visto == False %}
+                    <i class="bi bi-circle-fill" style="font-size: 0.3em; color: #0D6EFD;"></i>
+                    {% endif %}
                   </div>
                 </div>
 
