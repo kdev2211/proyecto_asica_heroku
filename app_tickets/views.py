@@ -331,6 +331,23 @@ def view_formulario_ticket(request, id):
         vista.fecha_vista = timezone.now()
         vista.save()
 
+
+        # Verificar si se accedió desde la notificación (por el parámetro en la URL)
+    # Obtener el ID de la notificación desde la URL
+    notificacion_id = request.GET.get('notificacion_id')
+
+    if notificacion_id:
+        # Actualizar el estado de la notificación a vista (visto=True)
+        try:
+            notificacion = Notificacion.objects.get(id=notificacion_id)
+
+            if notificacion.visto == False:
+                notificacion.visto = True
+                notificacion.save()
+        except Notificacion.DoesNotExist:
+            pass  # Manejar el caso en que la notificación no exista
+        
+
     lista_notas = Notas.objects.filter(ticket=id).order_by('-fecha_nota')
     ticket_data = get_object_or_404(Ticket.objects.select_related('categoria', 'contacto', 'status', 'origen_ticket', 'usuario', 'departamento'), id=id)
 
