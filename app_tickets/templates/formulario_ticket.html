@@ -92,12 +92,41 @@
                margin-top: 20px;
                ">
                {% for nota in notas %}
+
                <div class="card" style="box-shadow: none; margin-left: 10px; margin-right: 10px;" >
+
+                
                 <div class="card-header">
-                    
+                    <div class="row justify-content-between">
+
+                        <div class="col-3">
                     {{ nota.fecha_nota|date:"d/m/Y - h:i:s A" }}
+                </div>
+
+                <div class="col-auto">
+
+                    {% if nota.tipo_nota_id == 1%}
+
+                    Mensaje <i class="bi bi-envelope ms-2" style="font-size: 1.25rem;"></i>
+
+                    {% elif nota.tipo_nota_id == 2 %}
+
+                    Nota privada <i class="bi bi-stickies ms-2" style="font-size: 1.25rem;"></i>
+                    
+                    {% elif nota.tipo_nota_id == 3 %}
+
+                    Respuesta <i class="ri ri-send-plane-fill ms-2" style="font-size: 1.25rem;"></i>
+                    
+                    {% endif %}
+
 
                 </div>
+
+            </div>
+                </div>
+
+
+
                 <div class="card-body">
                      <h5 class="card-title">{{nota.autor}}</h5>
                      <!-- Quill Editor Bubble -->
