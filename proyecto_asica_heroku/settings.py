@@ -108,7 +108,7 @@ WSGI_APPLICATION = 'proyecto_asica_heroku.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://admin:K18TBtYNtOOwQpeQ0PfmLEPp4lxp48la@dpg-crjq6iaj1k6c73fob010-a.oregon-postgres.render.com/asica_db')
+    'default': dj_database_url.config(default='postgresql://asicadb_user:saYwrQwSQUJberNeFx2zs9V0rLDCS1uS@dpg-cvaibstrie7s7394391g-a.oregon-postgres.render.com/asicadb')
 }
 
 # Password validation
